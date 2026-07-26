@@ -1,19 +1,13 @@
-"scripts": {
-  "dev": "next dev --turbopack",
-  "build": "next build --turbopack",
-  "start": "next start",
-  "postinstall": "prisma generate"
-}
-
 {
   "name": "kickoffstore",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+ "scripts": {
   "dev": "next dev --turbopack",
   "build": "next build --turbopack",
-  "start": "next start"
-}
+  "start": "next start",
+  "postinstall": "prisma generate"
+   }
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
