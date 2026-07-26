@@ -2,6 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
+function formatNPR(paisaOrCents: number) {
+  const rupees = paisaOrCents / 100;
+  return `NPR ${rupees.toLocaleString('en-US')}`;
+}
+
 export const dynamic = 'force-dynamic';
 
 export default async function OrderConfirmationPage({
@@ -40,7 +45,7 @@ export default async function OrderConfirmationPage({
             </div>
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Total</p>
-              <p className="mt-2 text-xl font-semibold">${(order.total / 100).toFixed(2)}</p>
+              <p className="mt-2 text-xl font-semibold">{formatNPR(order.total)}</p>
             </div>
           </div>
 
@@ -51,7 +56,7 @@ export default async function OrderConfirmationPage({
                   <p className="font-medium">{item.product.name}</p>
                   <p className="text-sm text-slate-400">Qty {item.quantity}</p>
                 </div>
-                <p className="text-sm text-slate-300">${(item.unitPrice / 100).toFixed(2)}</p>
+                <p className="text-sm text-slate-300">{formatNPR(item.unitPrice)}</p>
               </div>
             ))}
           </div>

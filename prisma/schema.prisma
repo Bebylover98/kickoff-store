@@ -60,6 +60,7 @@ model Customer {
   passwordHash    String?
   provider        String?   @default("credentials")
   image           String?
+  role            String    @default("customer")
   shippingAddress String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

@@ -22,6 +22,7 @@ const providers: Array<any> = [
     async authorize(credentials) {
       const email = String(credentials?.email ?? '').toLowerCase();
       const password = String(credentials?.password ?? '');
+      console.log('LOGIN ATTEMPT:', { email, password, ADMIN_EMAIL, ADMIN_PASSWORD });
 
       if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
         return {

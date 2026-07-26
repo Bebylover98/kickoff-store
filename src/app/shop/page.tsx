@@ -1,8 +1,21 @@
 import Link from 'next/link';
 import type { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
+import AuroraBackground from '@/components/AuroraBackground';
+import StoreNav from '@/components/StoreNav';
 
 export const dynamic = 'force-dynamic';
+
+function formatNPR(paisa: number) {
+  const rupees = paisa / 100;
+  return `NPR ${rupees.toLocaleString('en-US')}`;
+}
+
+const sportLabels: Record<string, string> = {
+  FOOTBALL: 'Football',
+  CRICKET: 'Cricket',
+  BASKETBALL: 'Basketball',
+};
 
 function toPriceValue(value: string | undefined) {
   const parsed = Number(value ?? '0');
@@ -41,61 +54,108 @@ export default async function ShopPage({
   });
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
-      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top,_rgba(245,158,11,0.2),_transparent_40%)]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-20 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-sm uppercase tracking-[0.35em] text-amber-400">KickOff Shop</p>
-            <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">Browse premium jerseys by sport and budget.</h1>
-            <p className="mt-6 text-lg text-slate-400">Every piece is sourced from the Prisma catalog so the storefront stays in sync with your admin updates.</p>
+    <AuroraBackground>
+      <StoreNav />
+
+      <section className="border-b border-white/5">
+        <div className="container mx-auto px-4 py-16 md:py-20">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 text-sm font-medium text-white/70 backdrop-blur-sm mb-4">
+            <span>KickOff Shop</span>
           </div>
-          <Link href="/admin/products" className="rounded-full border border-amber-400/40 bg-amber-500/10 px-5 py-3 text-sm font-semibold text-amber-300">Manage inventory</Link>
+          <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
+            Browse premium gear by{' '}
+            <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              sport
+            </span>{' '}
+            and budget.
+          </h1>
+          <p className="mt-4 max-w-xl text-lg text-white/50">
+            Every piece is sourced from the live catalog, so the storefront always stays in sync with admin updates.
+          </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-12">
-        <form className="grid gap-4 rounded-3xl border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur md:grid-cols-3">
-          <label className="flex flex-col gap-2 text-sm text-slate-300">
+      <section className="container mx-auto px-4 py-10">
+        <form className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:grid-cols-3">
+          <label className="flex flex-col gap-2 text-sm text-white/60">
             <span>Sport</span>
-            <select name="sport" defaultValue={sport} className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3">
-              <option value="all">All sports</option>
-              <option value="football">Football</option>
-              <option value="cricket">Cricket</option>
-              <option value="basketball">Basketball</option>
+            <select
+              name="sport"
+              defaultValue={sport}
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+            >
+              <option value="all" className="bg-[#09090B]">All sports</option>
+              <option value="football" className="bg-[#09090B]">Football</option>
+              <option value="cricket" className="bg-[#09090B]">Cricket</option>
+              <option value="basketball" className="bg-[#09090B]">Basketball</option>
             </select>
           </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-300">
-            <span>Min price</span>
-            <input name="minPrice" type="number" defaultValue={minPrice || ''} min="0" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
+          <label className="flex flex-col gap-2 text-sm text-white/60">
+            <span>Min price (NPR)</span>
+            <input
+              name="minPrice"
+              type="number"
+              defaultValue={minPrice || ''}
+              min="0"
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+            />
           </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-300">
-            <span>Max price</span>
-            <input name="maxPrice" type="number" defaultValue={maxPrice || ''} min="0" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
+          <label className="flex flex-col gap-2 text-sm text-white/60">
+            <span>Max price (NPR)</span>
+            <input
+              name="maxPrice"
+              type="number"
+              defaultValue={maxPrice || ''}
+              min="0"
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+            />
           </label>
-          <button className="rounded-xl bg-amber-500 px-4 py-3 font-semibold text-slate-950 md:col-span-3">Apply filters</button>
+          <button className="rounded-xl bg-gradient-to-r from-purple-500 to-cyan-400 px-4 py-3 font-semibold text-white shadow-lg shadow-purple-500/25 hover:scale-[1.01] transition-transform md:col-span-3">
+            Apply filters
+          </button>
         </form>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-20">
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {products.map((product) => (
-            <article key={product.id} className="overflow-hidden rounded-3xl border border-white/10 bg-white/10 backdrop-blur">
-              <img src={product.imageUrl} alt={product.name} className="h-56 w-full object-cover" />
-              <div className="p-6">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-xl font-semibold">{product.name}</h2>
-                  <span className="rounded-full bg-slate-900/70 px-3 py-1 text-xs uppercase tracking-[0.25em] text-slate-300">{product.sport}</span>
+      <section className="container mx-auto px-4 pb-20">
+        {products.length === 0 ? (
+          <p className="text-white/40">No products match these filters yet.</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {products.map((product) => (
+              <article
+                key={product.id}
+                className="group overflow-hidden rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm hover:border-white/20 transition-all"
+              >
+                <div className="h-56 w-full overflow-hidden">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
                 </div>
-                <p className="mt-3 text-sm text-slate-400">{product.description}</p>
-                <div className="mt-5 flex items-center justify-between">
-                  <span className="text-lg font-semibold">${(product.price / 100).toFixed(2)}</span>
-                  <Link href={`/products/${product.slug}`} className="text-sm font-semibold text-amber-300">View details</Link>
+                <div className="p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-xl font-semibold">{product.name}</h2>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-wide text-white/60">
+                      {sportLabels[product.sport] ?? product.sport}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm text-white/40 line-clamp-2">{product.description}</p>
+                  <div className="mt-5 flex items-center justify-between">
+                    <span className="text-lg font-bold text-cyan-400">{formatNPR(product.price)}</span>
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className="rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition"
+                    >
+                      View details
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
-    </main>
+    </AuroraBackground>
   );
 }

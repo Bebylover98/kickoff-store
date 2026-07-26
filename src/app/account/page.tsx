@@ -2,6 +2,10 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+function formatNPR(paisaOrCents: number) {
+  const rupees = paisaOrCents / 100;
+  return `NPR ${rupees.toLocaleString('en-US')}`;
+}
 
 async function createAddress(formData: FormData) {
   'use server';
@@ -123,8 +127,7 @@ export default async function AccountPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</p>
-                      <p className="mt-2 font-semibold">${(order.total / 100).toFixed(2)}</p>
-                    </div>
+                      <p className="mt-2 font-semibold">{formatNPR(order.total)}</p>                    </div>
                   </div>
                   <div className="mt-4 space-y-2">
                     {order.items.map((item) => (

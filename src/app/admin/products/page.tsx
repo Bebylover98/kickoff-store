@@ -3,6 +3,11 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
 
+function formatNPR(paisaOrCents: number) {
+  const rupees = paisaOrCents / 100;
+  return `NPR ${rupees.toLocaleString('en-US')}`;
+}
+
 export const dynamic = 'force-dynamic';
 
 async function createProduct(formData: FormData) {
@@ -154,8 +159,7 @@ export default async function AdminProductsPage() {
                       <div className="text-xs text-slate-400">{product.brand}</div>
                     </td>
                     <td className="px-4 py-3">{product.sport}</td>
-                    <td className="px-4 py-3">${(product.price / 100).toFixed(2)}</td>
-                    <td className="px-4 py-3">{product.inStock}</td>
+                    <td className="px-4 py-3">{formatNPR(product.price)}</td>                    <td className="px-4 py-3">{product.inStock}</td>
                     <td className="px-4 py-3">{product.featured ? 'Yes' : 'No'}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">

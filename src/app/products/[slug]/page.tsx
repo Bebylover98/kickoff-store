@@ -2,6 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
+function formatNPR(paisa: number) {
+  const rupees = paisa / 100;
+  return `NPR ${rupees.toLocaleString('en-US')}`;
+}
+
 export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -46,8 +51,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Price</p>
             <div className="mt-2 flex items-end gap-3">
-              <span className="text-4xl font-semibold">${(product.price / 100).toFixed(2)}</span>
-              {product.compareAtPrice ? <span className="text-lg text-slate-500 line-through">${(product.compareAtPrice / 100).toFixed(2)}</span> : null}
+              <span className="text-4xl font-semibold">{formatNPR(product.price)}</span>
+{product.compareAtPrice ? <span className="text-lg text-slate-500 line-through">{formatNPR(product.compareAtPrice)}</span> : null}
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
