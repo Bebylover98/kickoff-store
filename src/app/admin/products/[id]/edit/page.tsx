@@ -1,4 +1,5 @@
-﻿import { prisma } from '@/lib/prisma';
+﻿
+import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
@@ -16,11 +17,11 @@ async function updateProduct(formData: FormData) {
   const inStock = Number(formData.get('inStock') ?? 0);
   const featured = formData.get('featured') === 'on';
 
-  if (!Number.isFinite(price) || price < 0 || price > 100000000) {
-    throw new Error('Price must be between 0 and 100,000,000, entered in cents.');
+  if (!Number.isFinite(price) || price < 0 || price > 1000000) {
+    throw new Error('Price must be between 0 and 1,000,000 NPR.');
   }
-  if (compareAtPrice && (!Number.isFinite(compareAtPrice) || compareAtPrice < 0 || compareAtPrice > 100000000)) {
-    throw new Error('Compare-at price must be between 0 and 100,000,000, entered in cents.');
+  if (compareAtPrice && (!Number.isFinite(compareAtPrice) || compareAtPrice < 0 || compareAtPrice > 1000000)) {
+    throw new Error('Compare-at price must be between 0 and 1,000,000 NPR.');
   }
   const imageFile = formData.get('image') as File | null;
   const imageUrl = imageFile && imageFile.size > 0
@@ -114,16 +115,18 @@ export default async function EditProductPage({
               type="number"
               required
               min="0"
-              max="100000000"
+              max="1000000"
               defaultValue={product.price}
-              placeholder="Price (cents)"
+              placeholder="Price (NPR)"
               className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3"
             />
             <input
               name="compareAtPrice"
               type="number"
+              min="0"
+              max="1000000"
               defaultValue={product.compareAtPrice ?? ''}
-              placeholder="Compare-at price"
+              placeholder="Compare-at price (NPR)"
               className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3"
             />
             <input
@@ -179,4 +182,3 @@ export default async function EditProductPage({
     </main>
   );
 }
-

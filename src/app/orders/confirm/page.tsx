@@ -1,10 +1,9 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
-function formatNPR(paisaOrCents: number) {
-  const rupees = paisaOrCents / 100;
-  return `NPR ${rupees.toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 export const dynamic = 'force-dynamic';

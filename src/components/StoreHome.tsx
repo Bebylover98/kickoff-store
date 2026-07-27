@@ -23,10 +23,8 @@ type Product = {
   featured: boolean;
   inStock: number;
 };
-
-function formatNPR(paisa: number) {
-  const rupees = paisa / 100;
-  return `NPR ${rupees.toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 const sportLabels: Record<string, string> = {

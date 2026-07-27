@@ -1,11 +1,11 @@
-import { auth } from '@/auth';
+﻿import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Package, ArrowRight, ShoppingBag, Clock, CheckCircle2, Truck, XCircle } from 'lucide-react';
 
-function formatNPR(paisa: number) {
-  return `NPR ${(paisa / 100).toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 const statusConfig: Record<string, { icon: typeof Clock; color: string; bg: string }> = {
@@ -88,7 +88,7 @@ export default async function OrdersListPage() {
                         month: 'short',
                         day: 'numeric',
                       })}
-                      {' · '}
+                      {' Â· '}
                       {order.items.reduce((sum, it) => sum + it.quantity, 0)} item
                       {order.items.reduce((sum, it) => sum + it.quantity, 0) !== 1 ? 's' : ''}
                     </p>

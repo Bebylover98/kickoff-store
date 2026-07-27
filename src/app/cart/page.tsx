@@ -2,8 +2,16 @@
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 
-function formatNPR(paisa: number) {
-  return `NPR ${(paisa / 100).toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
+}
+
+function fitLabel(fitType?: string, size?: string, partnerSize?: string) {
+  if (!fitType) return null;
+  if (fitType === 'COUPLE') return `Couple \u2014 His ${size ?? '-'} / Her ${partnerSize ?? '-'}`;
+  if (fitType === 'MALE') return `Male \u2014 Size ${size ?? '-'}`;
+  if (fitType === 'FEMALE') return `Female \u2014 Size ${size ?? '-'}`;
+  return null;
 }
 
 export default function CartPage() {
@@ -23,10 +31,13 @@ export default function CartPage() {
       <h1 className="text-2xl font-bold text-white mb-6">Your Cart</h1>
       <div className="space-y-4">
         {items.map((item) => (
-          <div key={item.productId} className="flex items-center gap-4 border-b border-white/10 pb-4">
+          <div key={`${item.productId}-${item.size ?? ''}-${item.fitType ?? ''}`} className="flex items-center gap-4 border-b border-white/10 pb-4">
             <img src={item.imageUrl} alt={item.name} className="h-16 w-16 rounded object-cover" />
             <div className="flex-1">
               <p className="text-white">{item.name}</p>
+              {fitLabel(item.fitType, item.size, item.partnerSize) && (
+                <p className="text-white/40 text-xs mt-0.5">{fitLabel(item.fitType, item.size, item.partnerSize)}</p>
+              )}
               <p className="text-white/50 text-sm">{formatNPR(item.price)} each</p>
             </div>
             <input
@@ -34,10 +45,10 @@ export default function CartPage() {
               min={1}
               max={item.inStock}
               value={item.quantity}
-              onChange={(e) => updateQuantity(item.productId, Number(e.target.value))}
+              onChange={(e) => updateQuantity(item.productId, Number(e.target.value), item.size, item.fitType)}
               className="w-16 rounded bg-white/5 border border-white/10 px-2 py-1 text-white"
             />
-            <button onClick={() => removeItem(item.productId)} className="text-white/40 hover:text-red-400">
+            <button onClick={() => removeItem(item.productId, item.size, item.fitType)} className="text-white/40 hover:text-red-400">
               Remove
             </button>
           </div>

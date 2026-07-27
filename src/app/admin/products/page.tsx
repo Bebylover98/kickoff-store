@@ -3,9 +3,8 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
 
-function formatNPR(paisaOrCents: number) {
-  const rupees = paisaOrCents / 100;
-  return `NPR ${rupees.toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 export const dynamic = 'force-dynamic';
@@ -22,11 +21,11 @@ async function createProduct(formData: FormData) {
   const inStock = Number(formData.get('inStock') ?? 0);
   const featured = formData.get('featured') === 'on';
 
-  if (!Number.isFinite(price) || price < 0 || price > 100000000) {
-    throw new Error('Price must be between 0 and 100,000,000 (i.e. up to NPR 1,000,000.00), entered in cents.');
+  if (!Number.isFinite(price) || price < 0 || price > 1000000) {
+    throw new Error('Price must be between 0 and 1,000,000 NPR.');
   }
-  if (compareAtPrice && (!Number.isFinite(compareAtPrice) || compareAtPrice < 0 || compareAtPrice > 100000000)) {
-    throw new Error('Compare-at price must be between 0 and 100,000,000, entered in cents.');
+  if (compareAtPrice && (!Number.isFinite(compareAtPrice) || compareAtPrice < 0 || compareAtPrice > 1000000)) {
+    throw new Error('Compare-at price must be between 0 and 1,000,000 NPR.');
   }
 
   const imageFile = formData.get('image') as File | null;
@@ -96,8 +95,8 @@ export default async function AdminProductsPage() {
               <option value="CRICKET">Cricket</option>
               <option value="BASKETBALL">Basketball</option>
             </select>
-            <input name="price" type="number" required min="0" max="100000000" placeholder="Price in cents (e.g. 250000 = NPR 2500)" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
-            <input name="compareAtPrice" type="number" min="0" max="100000000" placeholder="Compare-at price (cents)" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
+            <input name="price" type="number" required min="0" max="1000000" placeholder="Price in NPR (e.g. 2500)" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
+            <input name="compareAtPrice" type="number" min="0" max="1000000" placeholder="Compare-at price in NPR" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
             <input name="inStock" type="number" required placeholder="Stock" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
             <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-sm">
               <input name="featured" type="checkbox" className="h-4 w-4" />
@@ -154,4 +153,3 @@ export default async function AdminProductsPage() {
     </main>
   );
 }
-

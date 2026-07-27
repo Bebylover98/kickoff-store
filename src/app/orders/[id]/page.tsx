@@ -1,10 +1,11 @@
-﻿import { auth } from '@/auth';
+﻿
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 
-function formatNPR(paisa: number) {
-  return `NPR ${(paisa / 100).toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 export const dynamic = 'force-dynamic';

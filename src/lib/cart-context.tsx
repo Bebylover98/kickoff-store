@@ -9,13 +9,16 @@ export type CartItem = {
   imageUrl: string;
   quantity: number;
   inStock: number;
+  size?: string;
+  fitType?: string;
+  partnerSize?: string;
 };
 
 type CartContextValue = {
   items: CartItem[];
   addItem: (item: Omit<CartItem, 'quantity'>, qty?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, qty: number) => void;
+  removeItem: (productId: string, size?: string, fitType?: string) => void;
+  updateQuantity: (productId: string, qty: number, size?: string, fitType?: string) => void;
   clearCart: () => void;
   itemCount: number;
   subtotal: number;
@@ -23,6 +26,10 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = 'kickoff-cart';
+
+function sameLine(a: CartItem, productId: string, size?: string, fitType?: string) {
+  return a.productId === productId && a.size === size && a.fitType === fitType;
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -44,10 +51,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function addItem(item: Omit<CartItem, 'quantity'>, qty = 1) {
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === item.productId);
+      const existing = prev.find((i) => sameLine(i, item.productId, item.size, item.fitType));
       if (existing) {
         return prev.map((i) =>
-          i.productId === item.productId
+          sameLine(i, item.productId, item.size, item.fitType)
             ? { ...i, quantity: Math.min(i.quantity + qty, i.inStock) }
             : i
         );
@@ -56,15 +63,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  function removeItem(productId: string) {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  function removeItem(productId: string, size?: string, fitType?: string) {
+    setItems((prev) => prev.filter((i) => !sameLine(i, productId, size, fitType)));
   }
 
-  function updateQuantity(productId: string, qty: number) {
-    if (qty <= 0) return removeItem(productId);
+  function updateQuantity(productId: string, qty: number, size?: string, fitType?: string) {
+    if (qty <= 0) return removeItem(productId, size, fitType);
     setItems((prev) =>
       prev.map((i) =>
-        i.productId === productId ? { ...i, quantity: Math.min(qty, i.inStock) } : i
+        sameLine(i, productId, size, fitType) ? { ...i, quantity: Math.min(qty, i.inStock) } : i
       )
     );
   }

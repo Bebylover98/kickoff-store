@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
-function formatNPR(paisa: number) {
-  return `NPR ${(paisa / 100).toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 async function updateOrderStatus(formData: FormData) {

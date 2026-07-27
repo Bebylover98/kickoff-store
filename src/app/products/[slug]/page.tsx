@@ -1,12 +1,12 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import AddToCartButton from '@/components/AddToCartButton';
 
-function formatNPR(paisa: number) {
-  const rupees = paisa / 100;
-  return `NPR ${rupees.toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 export const dynamic = 'force-dynamic';

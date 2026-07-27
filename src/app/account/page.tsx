@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-function formatNPR(paisaOrCents: number) {
-  const rupees = paisaOrCents / 100;
-  return `NPR ${rupees.toLocaleString('en-US')}`;
+
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 async function createAddress(formData: FormData) {

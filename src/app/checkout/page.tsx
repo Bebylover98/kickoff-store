@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 
-function formatNPR(paisa: number) {
-  return `NPR ${(paisa / 100).toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 export default function CheckoutPage() {
@@ -41,7 +41,13 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+          items: items.map((i) => ({
+  productId: i.productId,
+  quantity: i.quantity,
+  size: i.size,
+  fitType: i.fitType,
+  partnerSize: i.partnerSize,
+})),
           ...form,
         }),
       });
@@ -124,7 +130,7 @@ export default function CheckoutPage() {
           <span className="text-white/60">Total</span>
           <span className="text-xl font-bold text-white">{formatNPR(subtotal)}</span>
         </div>
-        <p className="text-white/40 text-sm">Payment is collected by cash or local payment method on delivery/pickup — no online payment needed.</p>
+        <p className="text-white/40 text-sm">Payment is collected by cash or local payment method on delivery/pickup - no online payment needed.</p>
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button disabled={submitting} type="submit"
           className="w-full rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-3 font-medium text-white hover:opacity-90 transition disabled:opacity-50">

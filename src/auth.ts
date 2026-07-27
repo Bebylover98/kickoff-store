@@ -64,9 +64,9 @@ export const authConfig = {
     signIn: '/login',
   },
   callbacks: {
-    async signIn({ user, account }: any) {
+  async signIn({ user, account }: any) {
       if (account?.provider === 'google' && user.email) {
-        await prisma.customer.upsert({
+        const dbCustomer = await prisma.customer.upsert({
           where: { email: user.email },
           update: {
             name: user.name ?? undefined,
@@ -80,6 +80,9 @@ export const authConfig = {
             provider: 'google',
           },
         });
+        // Overwrite the Google account id with our real Customer.id
+        // so downstream jwt/session callbacks use the correct database id.
+        user.id = dbCustomer.id;
       }
       return true;
     },

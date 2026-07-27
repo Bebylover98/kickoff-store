@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import type { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import AuroraBackground from '@/components/AuroraBackground';
@@ -6,9 +6,8 @@ import StoreNav from '@/components/StoreNav';
 
 export const dynamic = 'force-dynamic';
 
-function formatNPR(paisa: number) {
-  const rupees = paisa / 100;
-  return `NPR ${rupees.toLocaleString('en-US')}`;
+function formatNPR(amount: number) {
+  return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
 const sportLabels: Record<string, string> = {
@@ -41,10 +40,10 @@ export default async function ShopPage({
   if (minPrice > 0 || maxPrice > 0) {
     where.price = {};
     if (minPrice > 0) {
-      where.price.gte = minPrice * 100;
+      where.price.gte = minPrice;
     }
     if (maxPrice > 0) {
-      where.price.lte = maxPrice * 100;
+      where.price.lte = maxPrice;
     }
   }
 
