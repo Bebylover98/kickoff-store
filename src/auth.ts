@@ -5,7 +5,6 @@ import Google from 'next-auth/providers/google';
 import { prisma } from '@/lib/prisma';
 import { verifyPassword } from '@/lib/auth';
 
-console.log('GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
 
 type SessionUser = {
   id?: string;
