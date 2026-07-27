@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Full name is required'),
@@ -55,10 +56,21 @@ const PasswordStrength = ({ password }: { password: string }) => {
   );
 };
 
+// Simple inline Google "G" logo (lucide-react doesn't ship brand icons)
+const GoogleIcon = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24">
+    <path fill="#4285F4" d="M23.766 12.276c0-.818-.074-1.606-.21-2.364H12.24v4.472h6.482a5.54 5.54 0 0 1-2.402 3.632v3.016h3.886c2.274-2.094 3.56-5.176 3.56-8.756z"/>
+    <path fill="#34A853" d="M12.24 24c3.24 0 5.956-1.074 7.944-2.904l-3.886-3.016c-1.078.724-2.458 1.152-4.058 1.152-3.122 0-5.766-2.108-6.71-4.942H1.516v3.108C3.492 21.3 7.552 24 12.24 24z"/>
+    <path fill="#FBBC05" d="M5.53 14.29a7.22 7.22 0 0 1 0-4.58V6.602H1.516a11.996 11.996 0 0 0 0 10.796l4.014-3.108z"/>
+    <path fill="#EA4335" d="M12.24 4.77c1.762 0 3.344.606 4.588 1.796l3.444-3.444C18.19 1.186 15.474 0 12.24 0 7.552 0 3.492 2.7 1.516 6.602L5.53 9.71c.944-2.834 3.588-4.94 6.71-4.94z"/>
+  </svg>
+);
+
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [serverError, setServerError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -125,6 +137,11 @@ export default function RegisterPage() {
       setServerError('Something went wrong. Please try again.');
       setIsLoading(false);
     }
+  };
+
+  const signInWithGoogle = () => {
+    setIsGoogleLoading(true);
+    signIn('google', { callbackUrl: '/' });
   };
 
   const totalFields = 4;
@@ -229,6 +246,31 @@ export default function RegisterPage() {
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* Google sign-in */}
+                <motion.button
+                  type="button"
+                  onClick={signInWithGoogle}
+                  disabled={isGoogleLoading}
+                  className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-medium text-white transition-all hover:bg-white/10 disabled:opacity-60"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isGoogleLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <GoogleIcon />
+                      Continue with Google
+                    </>
+                  )}
+                </motion.button>
+
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-white/10" />
+                  <span className="text-xs uppercase tracking-wide text-white/30">or</span>
+                  <div className="h-px flex-1 bg-white/10" />
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

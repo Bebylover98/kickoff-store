@@ -1,8 +1,11 @@
 import NextAuth from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
 import { prisma } from '@/lib/prisma';
 import { verifyPassword } from '@/lib/auth';
+
+console.log('GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
 
 type SessionUser = {
   id?: string;
@@ -13,6 +16,10 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@kickoffstore.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'Kickoff123!';
 
 const providers: Array<any> = [
+  Google({
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  }),
   Credentials({
     name: 'Credentials',
     credentials: {
@@ -22,7 +29,6 @@ const providers: Array<any> = [
     async authorize(credentials) {
       const email = String(credentials?.email ?? '').toLowerCase();
       const password = String(credentials?.password ?? '');
-      console.log('LOGIN ATTEMPT:', { email, password, ADMIN_EMAIL, ADMIN_PASSWORD });
 
       if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
         return {
