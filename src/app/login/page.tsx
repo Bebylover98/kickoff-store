@@ -9,7 +9,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -29,6 +29,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [particles, setParticles] = useState<{ x: number; y: number }[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,10 +79,15 @@ export default function LoginPage() {
         return;
       }
 
+      const session = await getSession();
+      const role = (session?.user as { role?: string } | undefined)?.role;
+      const admin = role === 'admin';
+      setIsAdminLogin(admin);
+
       setIsSubmitted(true);
       setIsLoading(false);
       setTimeout(() => {
-        router.push('/');
+        router.push(admin ? '/admin/products' : '/');
         router.refresh();
       }, 1200);
     } catch (err) {
@@ -283,7 +289,9 @@ export default function LoginPage() {
                 <CheckCircle className="h-8 w-8 text-cyan-400" />
               </motion.div>
               <h3 className="text-xl font-semibold">Signed in!</h3>
-              <p className="mt-1 text-white/60">Taking you home...</p>
+              <p className="mt-1 text-white/60">
+                {isAdminLogin ? 'You can now sell your products.' : 'Taking you home...'}
+              </p>
             </motion.div>
           </motion.div>
         )}

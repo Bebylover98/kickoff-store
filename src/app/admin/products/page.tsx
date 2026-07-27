@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+﻿import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
@@ -40,43 +40,6 @@ async function createProduct(formData: FormData) {
       featured,
       imageUrl,
       isActive: true,
-    },
-  });
-
-  revalidatePath('/admin/products');
-  redirect('/admin/products');
-}
-
-async function updateProduct(formData: FormData) {
-  'use server';
-  const id = String(formData.get('id') ?? '');
-  const name = String(formData.get('name') ?? '');
-  const slug = String(formData.get('slug') ?? '');
-  const brand = String(formData.get('brand') ?? '');
-  const sport = String(formData.get('sport') ?? 'FOOTBALL');
-  const description = String(formData.get('description') ?? '');
-  const price = Number(formData.get('price') ?? 0);
-  const compareAtPrice = Number(formData.get('compareAtPrice') ?? 0);
-  const inStock = Number(formData.get('inStock') ?? 0);
-  const featured = formData.get('featured') === 'on';
-  const imageFile = formData.get('image') as File | null;
-  const imageUrl = imageFile && imageFile.size > 0
-    ? await uploadImageToCloudinary(imageFile)
-    : undefined;
-
-  await prisma.product.update({
-    where: { id },
-    data: {
-      name,
-      slug,
-      brand,
-      sport: sport as 'FOOTBALL' | 'CRICKET' | 'BASKETBALL',
-      description,
-      price,
-      compareAtPrice: compareAtPrice || null,
-      inStock,
-      featured,
-      ...(imageUrl ? { imageUrl } : {}),
     },
   });
 
@@ -159,23 +122,14 @@ export default async function AdminProductsPage() {
                       <div className="text-xs text-slate-400">{product.brand}</div>
                     </td>
                     <td className="px-4 py-3">{product.sport}</td>
-                    <td className="px-4 py-3">{formatNPR(product.price)}</td>                    <td className="px-4 py-3">{product.inStock}</td>
+                    <td className="px-4 py-3">{formatNPR(product.price)}</td>
+                    <td className="px-4 py-3">{product.inStock}</td>
                     <td className="px-4 py-3">{product.featured ? 'Yes' : 'No'}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
-                        <form action={updateProduct} className="inline">
-                          <input type="hidden" name="id" value={product.id} />
-                          <input type="hidden" name="name" value={product.name} />
-                          <input type="hidden" name="slug" value={product.slug} />
-                          <input type="hidden" name="brand" value={product.brand} />
-                          <input type="hidden" name="sport" value={product.sport} />
-                          <input type="hidden" name="description" value={product.description} />
-                          <input type="hidden" name="price" value={product.price} />
-                          <input type="hidden" name="compareAtPrice" value={product.compareAtPrice ?? 0} />
-                          <input type="hidden" name="inStock" value={product.inStock} />
-                          <input type="hidden" name="featured" value={product.featured ? 'on' : ''} />
-                          <button className="rounded-lg border border-white/10 px-3 py-2 text-xs">Edit</button>
-                        </form>
+                        <a href={`/admin/products/${product.id}/edit`} className="rounded-lg border border-white/10 px-3 py-2 text-xs hover:bg-white/10 transition">
+                          Edit
+                        </a>
                         <form action={deleteProduct} className="inline">
                           <input type="hidden" name="id" value={product.id} />
                           <button className="rounded-lg border border-rose-400/40 px-3 py-2 text-xs text-rose-200">Delete</button>
