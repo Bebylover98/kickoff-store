@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShoppingBag, Heart, Minus, Plus, Truck, Shield,
@@ -47,17 +48,28 @@ export default function StoreHome({ products }: { products: Product[] }) {
   const [selectedSport, setSelectedSport] = useState('All');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [particles, setParticles] = useState<{ x: number; y: number }[]>([]);
+  const [isDesktop, setIsDesktop] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const categories = ['All', ...Array.from(new Set(products.map((p) => p.sport)))];
 
   useEffect(() => {
+    // Only enable heavy decorative effects (particles, mouse-follow glow)
+    // on devices with a fine pointer and enough width - i.e. real desktops.
+    // This is the single biggest fix for mobile lag: on phones, none of
+    // this JS-driven animation work runs at all.
+    const desktopQuery = window.matchMedia('(pointer: fine) and (min-width: 1024px)');
+    setIsDesktop(desktopQuery.matches);
+
+    if (!desktopQuery.matches) return;
+
     setParticles(
-      Array.from({ length: 30 }, () => ({
+      Array.from({ length: 12 }, () => ({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
       }))
     );
+
     const handleMouseMove = (e: MouseEvent) => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
@@ -99,40 +111,56 @@ export default function StoreHome({ products }: { products: Product[] }) {
   return (
     <div ref={containerRef} className="min-h-screen bg-[#09090B] text-white font-sans antialiased overflow-x-hidden">
       <div className="fixed inset-0 -z-10">
-        <motion.div
-          className="absolute top-[-30%] left-[-10%] h-[70%] w-[60%] rounded-full bg-gradient-to-r from-purple-600/20 via-blue-500/15 to-cyan-400/20 blur-[120px]"
-          animate={{ x: [0, 30, -20, 0], y: [0, -20, 30, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-[-20%] right-[-10%] h-[60%] w-[50%] rounded-full bg-gradient-to-l from-blue-600/20 via-violet-500/15 to-purple-400/20 blur-[120px]"
-          animate={{ x: [0, -30, 20, 0], y: [0, 30, -20, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 h-[50%] w-[40%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[100px]"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        {particles.map((p, i) => (
-          <motion.div
-            key={i}
-            className="absolute h-1 w-1 rounded-full bg-white/15"
-            initial={{ x: p.x, y: p.y }}
-            animate={{
-              x: [null, Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000)],
-              y: [null, Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800)],
-            }}
-            transition={{ duration: 20 + Math.random() * 30, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        ))}
+        {/* Static gradient blobs on mobile (no JS animation cost), animated only on desktop */}
+        <div className="absolute top-[-30%] left-[-10%] h-[70%] w-[60%] rounded-full bg-gradient-to-r from-purple-600/20 via-blue-500/15 to-cyan-400/20 blur-[80px] md:blur-[120px]">
+          {isDesktop && (
+            <motion.div
+              className="h-full w-full"
+              animate={{ x: [0, 30, -20, 0], y: [0, -20, 30, 0] }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+        </div>
+        <div className="absolute bottom-[-20%] right-[-10%] h-[60%] w-[50%] rounded-full bg-gradient-to-l from-blue-600/20 via-violet-500/15 to-purple-400/20 blur-[80px] md:blur-[120px]">
+          {isDesktop && (
+            <motion.div
+              className="h-full w-full"
+              animate={{ x: [0, -30, 20, 0], y: [0, 30, -20, 0] }}
+              transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+        </div>
+
+        {isDesktop && (
+          <>
+            <motion.div
+              className="absolute top-1/2 left-1/2 h-[50%] w-[40%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[100px]"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            {particles.map((p, i) => (
+              <motion.div
+                key={i}
+                className="absolute h-1 w-1 rounded-full bg-white/15"
+                initial={{ x: p.x, y: p.y }}
+                animate={{
+                  x: [null, Math.random() * window.innerWidth],
+                  y: [null, Math.random() * window.innerHeight],
+                }}
+                transition={{ duration: 20 + Math.random() * 30, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            ))}
+          </>
+        )}
       </div>
 
-      <motion.div
-        className="pointer-events-none fixed h-[500px] w-[500px] rounded-full bg-gradient-to-r from-purple-500/8 via-blue-500/8 to-cyan-400/8 blur-[80px]"
-        animate={{ x: mousePosition.x - 250, y: mousePosition.y - 250 }}
-        transition={{ type: 'tween', ease: 'easeOut', duration: 0.6 }}
-      />
+      {isDesktop && (
+        <motion.div
+          className="pointer-events-none fixed h-[500px] w-[500px] rounded-full bg-gradient-to-r from-purple-500/8 via-blue-500/8 to-cyan-400/8 blur-[80px]"
+          animate={{ x: mousePosition.x - 250, y: mousePosition.y - 250 }}
+          transition={{ type: 'tween', ease: 'easeOut', duration: 0.6 }}
+        />
+      )}
 
       <StoreNav />
 
@@ -170,7 +198,9 @@ export default function StoreHome({ products }: { products: Product[] }) {
                     whileHover={{ y: -8, scale: 1.02 }}
                     className="flex flex-col items-center rounded-2xl bg-white/5 p-4 backdrop-blur-sm border border-white/10"
                   >
-                    <img src={product.imageUrl} alt={product.name} className="h-24 w-24 rounded-xl object-cover mb-2" />
+                    <div className="relative h-24 w-24 mb-2">
+                      <Image src={product.imageUrl} alt={product.name} fill sizes="96px" className="rounded-xl object-cover" />
+                    </div>
                     <p className="text-sm font-medium text-center">{product.name}</p>
                     <p className="text-sm text-cyan-400">{formatNPR(product.price)}</p>
                   </motion.div>
@@ -213,7 +243,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                 key={product.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: Math.min(index, 8) * 0.05 }}
                 whileHover={{ y: -8 }}
                 className="group relative rounded-2xl bg-white/5 p-4 backdrop-blur-sm border border-white/5 hover:border-white/20 transition-all"
               >
@@ -226,8 +256,14 @@ export default function StoreHome({ products }: { products: Product[] }) {
                   <Heart className="h-4 w-4" />
                 </button>
                 <Link href={`/products/${product.slug}`}>
-                  <div className="flex h-48 items-center justify-center overflow-hidden rounded-xl">
-                    <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                  <div className="relative h-48 overflow-hidden rounded-xl">
+                    <Image
+                      src={product.imageUrl}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
                   </div>
                 </Link>
                 <div className="mt-4 space-y-2">
@@ -339,7 +375,9 @@ export default function StoreHome({ products }: { products: Product[] }) {
                   <div className="flex-1 space-y-3 overflow-y-auto max-h-[60vh]">
                     {cart.map((item) => (
                       <div key={item.productId} className="flex items-center gap-4 rounded-xl bg-white/5 p-3">
-                        <img src={item.imageUrl} alt={item.name} className="h-12 w-12 rounded-lg object-cover" />
+                        <div className="relative h-12 w-12 shrink-0">
+                          <Image src={item.imageUrl} alt={item.name} fill sizes="48px" className="rounded-lg object-cover" />
+                        </div>
                         <div className="flex-1">
                           <p className="font-medium">{item.name}</p>
                           <p className="text-sm text-cyan-400">{formatNPR(item.price)}</p>
