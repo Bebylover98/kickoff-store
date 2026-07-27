@@ -1,6 +1,7 @@
+@'
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Lock, Eye, EyeOff, CheckCircle,
@@ -20,7 +21,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get('registered') === 'true';
@@ -299,3 +300,12 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+'@ | Set-Content -Path "src\app\login\page.tsx" -Encoding utf8
