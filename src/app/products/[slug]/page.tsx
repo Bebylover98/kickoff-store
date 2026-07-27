@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import AddToCartButton from '@/components/AddToCartButton';
@@ -38,7 +39,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
           <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur">
-            <img src={product.imageUrl} alt={product.name} className="h-[420px] w-full rounded-2xl object-cover" />
+            <div className="relative h-[420px] w-full overflow-hidden rounded-2xl">
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 576px"
+                priority
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
