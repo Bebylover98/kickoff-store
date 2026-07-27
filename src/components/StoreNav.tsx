@@ -1,11 +1,12 @@
 'use client';
-
 import Link from 'next/link';
 import { ShoppingBag } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
+import { useCart } from '@/lib/cart-context';
 
 export default function StoreNav() {
   const { data: session, status } = useSession();
+  const { itemCount } = useCart();
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#09090B]/80 backdrop-blur-xl">
@@ -21,7 +22,17 @@ export default function StoreNav() {
             <Link href="/shop" className="text-white/60 hover:text-white transition">Shop</Link>
             <Link href="/account" className="text-white/60 hover:text-white transition">Account</Link>
             <Link href="/orders" className="text-white/60 hover:text-white transition">Orders</Link>
-
+            {session?.user?.role === 'admin' && (
+              <Link href="/admin/orders" className="text-white/60 hover:text-white transition">Admin</Link>
+            )}
+            <Link href="/cart" className="relative text-white/60 hover:text-white transition">
+              <ShoppingBag className="h-5 w-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-white">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
             {status === 'loading' ? null : session?.user ? (
               <div className="flex items-center gap-3">
                 <span className="text-white/80">

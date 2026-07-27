@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import AddToCartButton from '@/components/AddToCartButton';
 
 function formatNPR(paisa: number) {
   const rupees = paisa / 100;
@@ -11,9 +12,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-
   let product;
-
   try {
     product = await prisma.product.findUnique({
       where: { slug },
@@ -21,11 +20,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   } catch {
     product = null;
   }
-
   if (!product) {
     notFound();
   }
-
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top,_rgba(245,158,11,0.2),_transparent_40%)]">
@@ -45,24 +42,25 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </section>
-
       <section className="mx-auto max-w-7xl px-6 py-16">
         <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Price</p>
             <div className="mt-2 flex items-end gap-3">
               <span className="text-4xl font-semibold">{formatNPR(product.price)}</span>
-{product.compareAtPrice ? <span className="text-lg text-slate-500 line-through">{formatNPR(product.compareAtPrice)}</span> : null}
+              {product.compareAtPrice ? <span className="text-lg text-slate-500 line-through">{formatNPR(product.compareAtPrice)}</span> : null}
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/shop" className="rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-slate-200">Back to shop</Link>
-            <form action="/api/checkout" method="POST">
-              <input type="hidden" name="slug" value={product.slug} />
-              <input type="hidden" name="quantity" value="1" />
-              <button type="submit" className="rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-950">Checkout with Stripe</button>
-            </form>
-            <a href="/admin/products" className="rounded-full border border-amber-400/40 bg-amber-500/10 px-5 py-3 text-sm font-semibold text-amber-300">Manage products</a>
+            <AddToCartButton
+              productId={product.id}
+              name={product.name}
+              slug={product.slug}
+              price={product.price}
+              imageUrl={product.imageUrl}
+              inStock={product.inStock}
+            />
           </div>
         </div>
       </section>

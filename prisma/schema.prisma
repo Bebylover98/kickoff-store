@@ -84,7 +84,6 @@ model Address {
 
   @@index([customerId])
 }
-
 model Order {
   id              String        @id @default(cuid())
   customerId      String
@@ -93,13 +92,20 @@ model Order {
   paymentStatus   PaymentStatus @default(PENDING)
   total           Int
   currency        String        @default("USD")
-  shippingAddress String?
+  contactName     String
+  contactPhone    String
+  addressLine1    String
+  addressLine2    String?
+  city            String
+  state           String
+  postalCode      String
+  country         String        @default("Nepal")
+  notes           String?
   stripeSessionId String?       @unique
   stripePaymentId String?       @unique
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   items           OrderItem[]
-
   @@index([customerId])
 }
 

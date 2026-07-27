@@ -8,6 +8,7 @@ import {
   Award, RefreshCw, ArrowRight, Sparkles, Eye, Share2, X,
 } from 'lucide-react';
 import StoreNav from './StoreNav';
+import { useCart } from '@/lib/cart-context';
 
 type Product = {
   id: string;
@@ -22,14 +23,6 @@ type Product = {
   inStock: number;
 };
 
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  imageUrl: string;
-  quantity: number;
-};
-
 function formatNPR(paisa: number) {
   const rupees = paisa / 100;
   return `NPR ${rupees.toLocaleString('en-US')}`;
@@ -42,7 +35,14 @@ const sportLabels: Record<string, string> = {
 };
 
 export default function StoreHome({ products }: { products: Product[] }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const {
+    items: cart,
+    addItem,
+    removeItem,
+    updateQuantity: updateCartQuantity,
+    itemCount: totalItems,
+    subtotal: totalPrice,
+  } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedSport, setSelectedSport] = useState('All');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -69,31 +69,29 @@ export default function StoreHome({ products }: { products: Product[] }) {
   }, []);
 
   const addToCart = (product: Product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prev, { id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const updateQuantity = (id: string, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((item) => (item.id === id ? { ...item, quantity: item.quantity + delta } : item))
-        .filter((item) => item.quantity > 0)
+    addItem(
+      {
+        productId: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        inStock: product.inStock,
+      },
+      1
     );
+    setIsCartOpen(true);
   };
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const removeFromCart = (productId: string) => {
+    removeItem(productId);
+  };
+
+  const updateQuantity = (productId: string, delta: number) => {
+    const current = cart.find((item) => item.productId === productId);
+    if (!current) return;
+    updateCartQuantity(productId, current.quantity + delta);
+  };
 
   const filteredProducts = selectedSport === 'All' ? products : products.filter((p) => p.sport === selectedSport);
   const heroProducts = products.slice(0, 4);
@@ -340,22 +338,22 @@ export default function StoreHome({ products }: { products: Product[] }) {
                 <>
                   <div className="flex-1 space-y-3 overflow-y-auto max-h-[60vh]">
                     {cart.map((item) => (
-                      <div key={item.id} className="flex items-center gap-4 rounded-xl bg-white/5 p-3">
+                      <div key={item.productId} className="flex items-center gap-4 rounded-xl bg-white/5 p-3">
                         <img src={item.imageUrl} alt={item.name} className="h-12 w-12 rounded-lg object-cover" />
                         <div className="flex-1">
                           <p className="font-medium">{item.name}</p>
                           <p className="text-sm text-cyan-400">{formatNPR(item.price)}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <button onClick={() => updateQuantity(item.id, -1)} className="rounded-full bg-white/10 p-1 hover:bg-white/20">
+                            <button onClick={() => updateQuantity(item.productId, -1)} className="rounded-full bg-white/10 p-1 hover:bg-white/20">
                               <Minus className="h-3 w-3" />
                             </button>
                             <span className="text-sm">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, 1)} className="rounded-full bg-white/10 p-1 hover:bg-white/20">
+                            <button onClick={() => updateQuantity(item.productId, 1)} className="rounded-full bg-white/10 p-1 hover:bg-white/20">
                               <Plus className="h-3 w-3" />
                             </button>
                           </div>
                         </div>
-                        <button onClick={() => removeFromCart(item.id)} className="text-white/30 hover:text-red-400 transition">
+                        <button onClick={() => removeFromCart(item.productId)} className="text-white/30 hover:text-red-400 transition">
                           <X className="h-4 w-4" />
                         </button>
                       </div>
@@ -366,7 +364,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                       <span>Total</span>
                       <span className="text-cyan-400">{formatNPR(totalPrice)}</span>
                     </div>
-                    <Link href="/shop" className="mt-4 block w-full text-center rounded-xl bg-gradient-to-r from-purple-500 to-cyan-400 py-3 font-semibold shadow-lg shadow-purple-500/25">
+                    <Link href="/checkout" className="mt-4 block w-full text-center rounded-xl bg-gradient-to-r from-purple-500 to-cyan-400 py-3 font-semibold shadow-lg shadow-purple-500/25">
                       Checkout <ArrowRight className="inline h-4 w-4 ml-1" />
                     </Link>
                   </div>

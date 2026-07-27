@@ -1,5 +1,4 @@
 ﻿'use client';
-
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -24,7 +23,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get('registered') === 'true';
-
+  const callbackUrl = searchParams.get('callbackUrl');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -83,13 +82,12 @@ function LoginForm() {
       const role = (session?.user as { role?: string } | undefined)?.role;
       const admin = role === 'admin';
       setIsAdminLogin(admin);
-
-      setIsSubmitted(true);
-      setIsLoading(false);
-      setTimeout(() => {
-        router.push(admin ? '/admin/products' : '/');
-        router.refresh();
-      }, 1200);
+setIsSubmitted(true);
+setIsLoading(false);
+setTimeout(() => {
+  router.push(admin ? '/admin/products' : (callbackUrl || '/'));
+  router.refresh();
+}, 1200);
     } catch (err) {
       setServerError('Something went wrong. Please try again.');
       setIsLoading(false);
