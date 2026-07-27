@@ -1,12 +1,108 @@
-// This is your Prisma schema file.
-// Learn more: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
-datasource db {
+   datasource db {
   provider = "postgresql"
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  name           String
+  slug           String      @unique
+  sport          Sport
+  brand          String
+  price          Int
+  compareAtPrice Int?
+  description    String
+  imageUrl       String
+  featured       Boolean     @default(false)
+  inStock        Int         @default(10)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  orderItems     OrderItem[]
+
+  @@index([sport])
+  @@index([featured])
+}
+
+model Customer {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String?
+  phone           String?
+  passwordHash    String?
+  provider        String?   @default("credentials")
+  image           String?
+  role            String    @default("customer")
+  shippingAddress String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  addresses       Address[]
+  orders          Order[]
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  customerId String
+  label      String   @default("Home")
+  fullName   String
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  customerId   String
+  status       OrderStatus @default(PENDING)
+  total        Int
+  contactName  String
+  contactPhone String
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  postalCode   String
+  country      String      @default("Nepal")
+  notes        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  customer     Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  items        OrderItem[]
+
+  @@index([customerId])
+}
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  unitPrice   Int
+  fitType     FitType?
+  partnerSize Size?
+  size        Size?
+
+  contactName  String?
+  contactPhone String?
+  addressLine1 String?
+  addressLine2 String?
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 enum Sport {
@@ -41,99 +137,4 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
-}
-
-model Product {
-  id              String      @id @default(cuid())
-  name            String
-  slug            String      @unique
-  sport           Sport
-  brand           String
-  price           Int
-  compareAtPrice  Int?
-  description     String
-  imageUrl        String
-  featured        Boolean     @default(false)
-  inStock         Int         @default(10)
-  isActive        Boolean     @default(true)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  orderItems      OrderItem[]
-
-  @@index([sport])
-  @@index([featured])
-}
-
-model Customer {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  name            String?
-  phone           String?
-  passwordHash    String?
-  provider        String?   @default("credentials")
-  image           String?
-  role            String    @default("customer")
-  shippingAddress String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  orders          Order[]
-  addresses       Address[]
-}
-
-model Address {
-  id           String   @id @default(cuid())
-  customerId   String
-  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  label        String   @default("Home")
-  fullName     String
-  line1        String
-  line2        String?
-  city         String
-  state        String
-  postalCode   String
-  country      String
-  isDefault    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([customerId])
-}
-model Order {
-  id              String        @id @default(cuid())
-  customerId      String
-  customer        Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  status          OrderStatus   @default(PENDING)
-  paymentStatus   PaymentStatus @default(PENDING)
-  total           Int
-currency        String        @default("NPR")  
-  contactName     String
-  contactPhone    String
-  addressLine1    String
-  addressLine2    String?
-  city            String
-  state           String
-  postalCode      String
-  country         String        @default("Nepal")
-  notes           String?
-  stripeSessionId String?       @unique
-  stripePaymentId String?       @unique
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  items           OrderItem[]
-  @@index([customerId])
-}
-model OrderItem {
-  id          String   @id @default(cuid())
-  orderId     String
-  productId   String
-  quantity    Int
-  unitPrice   Int
-  size        Size?
-  fitType     FitType?
-  partnerSize Size?
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
-
-  @@index([orderId])
-  @@index([productId])
 }
