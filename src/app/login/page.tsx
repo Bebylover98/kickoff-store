@@ -1,5 +1,4 @@
-@'
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -189,7 +188,7 @@ function LoginForm() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-4 flex items-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-300"
                   >
-                    <CheckCircle className="h-4 w-4" /> Account created — sign in below.
+                    <CheckCircle className="h-4 w-4" /> Account created â€” sign in below.
                   </motion.p>
                 )}
 
@@ -308,4 +307,3 @@ export default function LoginPage() {
     </Suspense>
   );
 }
-'@ | Set-Content -Path "src\app\login\page.tsx" -Encoding utf8
