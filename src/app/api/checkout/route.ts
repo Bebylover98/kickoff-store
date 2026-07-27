@@ -1,53 +1,99 @@
+import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
 
 export async function POST(request: NextRequest) {
-  const formData = await request.formData();
-  const slug = String(formData.get('slug') ?? '');
-  const quantity = Number(formData.get('quantity') ?? 1);
+  const body = await request.text();
+  const signature = (await headers()).get('stripe-signature');
 
-  const product = await prisma.product.findUnique({ where: { slug } });
-  if (!product || !product.isActive) {
-    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+  if (!signature) {
+    return NextResponse.json({ error: 'Missing stripe signature' }, { status: 400 });
   }
-
-  const session = await auth();
-  const customerId = session?.user?.id && session.user.id !== 'admin' ? session.user.id : undefined;
 
   if (!stripe) {
     return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
   }
 
-  const lineItems = [{
-    price_data: {
-      currency: 'usd',
-      product_data: {
-        name: product.name,
-        description: product.description,
-        images: [product.imageUrl],
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET ?? '',
+    );
+  } catch (error) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    const productId = session.metadata?.productId;
+    const quantity = Number(session.metadata?.quantity ?? 1);
+    const metadataCustomerId = session.metadata?.customerId;
+
+    if (!productId) {
+      return NextResponse.json({ error: 'Missing product metadata' }, { status: 400 });
+    }
+
+    const customer = metadataCustomerId
+      ? await prisma.customer.findUnique({ where: { id: metadataCustomerId } })
+      : null;
+
+    const persistedCustomer = customer ?? await prisma.customer.upsert({
+      where: { email: session.customer_details?.email ?? 'guest@kickoffstore.local' },
+      update: {},
+      create: {
+        email: session.customer_details?.email ?? 'guest@kickoffstore.local',
+        name: session.customer_details?.name ?? 'Guest',
       },
-      unit_amount: product.price,
-    },
-    quantity,
-  }];
+    });
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    line_items: lineItems,
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/orders/confirm?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/products/${product.slug}`,
-    metadata: {
-      productId: product.id,
-      slug,
-      quantity: String(quantity),
-      customerId: customerId ?? '',
-    },
-  });
+    const shipping = session.customer_details?.address;
 
-  return NextResponse.redirect(checkoutSession.url ?? '/', 303);
+    const order = await prisma.order.create({
+      data: {
+        customerId: persistedCustomer.id,
+        total: Number(session.amount_total ?? 0),
+        currency: (session.currency ?? 'usd').toUpperCase(),
+        status: 'PAID',
+        paymentStatus: 'PAID',
+        stripeSessionId: session.id,
+        stripePaymentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+        contactName: session.customer_details?.name ?? persistedCustomer.name ?? 'Unknown',
+        contactPhone: session.customer_details?.phone ?? 'Unknown',
+        addressLine1: shipping?.line1 ?? 'Unknown',
+        addressLine2: shipping?.line2 ?? null,
+        city: shipping?.city ?? 'Unknown',
+        state: shipping?.state ?? 'Unknown',
+        postalCode: shipping?.postal_code ?? 'Unknown',
+        country: shipping?.country ?? 'Nepal',
+        items: {
+          create: {
+            productId,
+            quantity,
+            unitPrice: Number((await prisma.product.findUnique({ where: { id: productId } }))?.price ?? 0),
+          },
+        },
+      },
+    });
+
+    await prisma.product.update({
+      where: { id: productId },
+      data: {
+        inStock: {
+          decrement: quantity,
+        },
+      },
+    });
+
+    return NextResponse.json({ received: true, orderId: order.id });
+  }
+
+  return NextResponse.json({ received: true });
 }
