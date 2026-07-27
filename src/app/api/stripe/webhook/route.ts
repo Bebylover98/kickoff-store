@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
+
     const productId = session.metadata?.productId;
     const quantity = Number(session.metadata?.quantity ?? 1);
     const metadataCustomerId = session.metadata?.customerId;
@@ -53,6 +54,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const shipping = session.customer_details?.address;
+
     const order = await prisma.order.create({
       data: {
         customerId: persistedCustomer.id,
@@ -62,6 +65,14 @@ export async function POST(request: NextRequest) {
         paymentStatus: 'PAID',
         stripeSessionId: session.id,
         stripePaymentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+        contactName: session.customer_details?.name ?? persistedCustomer.name ?? 'Unknown',
+        contactPhone: session.customer_details?.phone ?? 'Unknown',
+        addressLine1: shipping?.line1 ?? 'Unknown',
+        addressLine2: shipping?.line2 ?? null,
+        city: shipping?.city ?? 'Unknown',
+        state: shipping?.state ?? 'Unknown',
+        postalCode: shipping?.postal_code ?? 'Unknown',
+        country: shipping?.country ?? 'Nepal',
         items: {
           create: {
             productId,
