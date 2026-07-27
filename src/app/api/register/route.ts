@@ -20,10 +20,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const existing = await prisma.customer.findUnique({
-      where: { email },
-    });
+    const normalizedEmail = String(email).trim().toLowerCase();
 
+    const existing = await prisma.customer.findUnique({
+      where: { email: normalizedEmail },
+    });
     if (existing) {
       return NextResponse.json(
         { error: "An account with this email already exists." },
@@ -32,11 +33,10 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await hashPassword(password);
-
     const customer = await prisma.customer.create({
       data: {
         name: name || null,
-        email,
+        email: normalizedEmail,
         phone: phone || null,
         passwordHash,
         provider: "credentials",
