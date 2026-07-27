@@ -2,7 +2,8 @@ generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
-   datasource db {
+
+datasource db {
   provider = "postgresql"
 }
 
@@ -61,37 +62,41 @@ model Address {
 
   @@index([customerId])
 }
-
 model Order {
-  id           String      @id @default(cuid())
-  customerId   String
-  status       OrderStatus @default(PENDING)
-  total        Int
-  contactName  String
-  contactPhone String
-  addressLine1 String
-  addressLine2 String?
-  city         String
-  state        String
-  postalCode   String
-  country      String      @default("Nepal")
-  notes        String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  customer     Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  items        OrderItem[]
+  id              String        @id @default(cuid())
+  customerId      String
+  status          OrderStatus   @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  total           Int
+  currency        String        @default("NPR")
+  stripeSessionId String?
+  stripePaymentId String?
+  contactName     String
+  contactPhone    String
+  addressLine1    String
+  addressLine2    String?
+  city            String
+  state           String
+  postalCode      String
+  country         String        @default("Nepal")
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  customer        Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  items           OrderItem[]
 
   @@index([customerId])
 }
+
 model OrderItem {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   orderId     String
   productId   String
   quantity    Int
-  unitPrice   Int
-  fitType     FitType?
-  partnerSize Size?
-  size        Size?
+  unitPrice   Float
+  size        String?
+  fitType     String?
+  partnerSize String?
 
   contactName  String?
   contactPhone String?
