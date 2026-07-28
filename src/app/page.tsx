@@ -10,8 +10,8 @@ export default async function HomePage() {
     take: 12,
   });
 
-  const serialized = products.map((p) => ({
-    id: p.id,
+const uniqueProducts = Array.from(new Map(products.map((p) => [p.id, p])).values());
+   const serialized = uniqueProducts.map((p) => ({    id: p.id,
     name: p.name,
     slug: p.slug,
     sport: p.sport,

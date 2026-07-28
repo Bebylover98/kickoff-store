@@ -23,7 +23,7 @@ export default function StoreNav() {
             <Link href="/account" className="text-white/60 hover:text-white transition">Account</Link>
             <Link href="/orders" className="text-white/60 hover:text-white transition">Orders</Link>
             {session?.user?.role === 'admin' && (
-              <Link href="/admin/orders" className="text-white/60 hover:text-white transition">Admin</Link>
+              <Link href="/admin/products" className="text-white/60 hover:text-white transition">Admin</Link>
             )}
             <Link href="/cart" className="relative text-white/60 hover:text-white transition">
               <ShoppingBag className="h-5 w-5" />

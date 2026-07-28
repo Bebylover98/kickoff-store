@@ -57,21 +57,24 @@ async function createProduct(formData: FormData) {
 async function deleteProduct(formData: FormData) {
   'use server';
   const id = String(formData.get('id') ?? '');
-  await prisma.product.delete({ where: { id } });
+  await prisma.product.update({
+    where: { id },
+    data: { isActive: false },
+  });
   revalidatePath('/admin/products');
   redirect('/admin/products');
 }
 
 export default async function AdminProductsPage() {
-  let products: Array<{ id: string; name: string; slug: string; brand: string; sport: string; description: string; price: number; compareAtPrice: number | null; inStock: number; featured: boolean; imageUrl: string; }> = [];
+  let products: Array<{ id: string; name: string; slug: string; brand: string; sport: string; description: string; price: number; compareAtPrice: number | null; inStock: number; featured: boolean; imageUrl: string; isActive: boolean }> = [];
 
-  try {
-    products = await prisma.product.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-  } catch {
-    products = [];
-  }
+try {
+  products = await prisma.product.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
+} catch {
+  products = [];
+}
 
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
