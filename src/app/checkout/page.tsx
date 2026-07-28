@@ -26,6 +26,7 @@ export default function CheckoutPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   function update(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -56,6 +57,7 @@ export default function CheckoutPage() {
         setError(data.error ?? 'Something went wrong.');
         return;
       }
+      setOrderPlaced(true);
       clearCart();
       router.push(`/orders/${data.id}`);
     } catch {
@@ -86,10 +88,13 @@ export default function CheckoutPage() {
     );
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !orderPlaced) {
     return <div className="container mx-auto px-4 py-20 text-center text-white/60">Your cart is empty.</div>;
   }
 
+  if (orderPlaced) {
+    return <div className="container mx-auto px-4 py-20 text-center text-white/60">Placing your order...</div>;
+  }
   return (
     <div className="container mx-auto px-4 py-10 max-w-xl">
       <h1 className="text-2xl font-bold text-white mb-6">Checkout</h1>
