@@ -78,8 +78,15 @@ function LoginForm() {
         return;
       }
 
-      const session = await getSession();
-      const role = (session?.user as { role?: string } | undefined)?.role;
+      let session = await getSession();
+      let role = (session?.user as { role?: string } | undefined)?.role;
+      let attempts = 0;
+      while (!role && attempts < 5) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        session = await getSession();
+        role = (session?.user as { role?: string } | undefined)?.role;
+        attempts += 1;
+      }
       const admin = role === 'admin';
       setIsAdminLogin(admin);
 setIsSubmitted(true);
