@@ -25,19 +25,24 @@ export default function StoreNav() {
             {session?.user?.role === 'admin' && (
               <Link href="/admin/products" className="text-white/60 hover:text-white transition">Admin</Link>
             )}
-            <Link href="/cart" className="relative text-white/60 hover:text-white transition">
-              <ShoppingBag className="h-5 w-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-white">
-                  {itemCount}
-                </span>
-              )}
-            </Link>
+            {session?.user?.role !== 'admin' && (
+              <Link href="/cart" className="relative text-white/60 hover:text-white transition">
+                <ShoppingBag className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-white">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+            )}
             {status === 'loading' ? null : session?.user ? (
               <div className="flex items-center gap-3">
-                <span className="text-white/80">
+                <Link
+                  href={session.user.role === 'admin' ? '/admin/products' : '/account'}
+                  className="text-white/80 hover:text-white transition"
+                >
                   Hi, {session.user.name?.split(' ')[0] ?? session.user.email}
-                </span>
+                </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
                   className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 hover:bg-white/10 transition"

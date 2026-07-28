@@ -9,10 +9,24 @@ function formatNPR(amount: number) {
 
 export const dynamic = 'force-dynamic';
 
+function slugify(input: string) {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 async function createProduct(formData: FormData) {
   'use server';
   const name = String(formData.get('name') ?? '');
-  const slug = String(formData.get('slug') ?? '');
+  const baseSlug = slugify(name);
+  let slug = baseSlug;
+  let suffix = 1;
+  while (await prisma.product.findUnique({ where: { slug } })) {
+    slug = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
   const brand = String(formData.get('brand') ?? '');
   const sport = String(formData.get('sport') ?? 'FOOTBALL');
   const description = String(formData.get('description') ?? '');
@@ -70,6 +84,7 @@ export default async function AdminProductsPage() {
 
 try {
   products = await prisma.product.findMany({
+    where: { isActive: true },
     orderBy: { createdAt: 'desc' },
   });
 } catch {
@@ -91,7 +106,7 @@ try {
           <h2 className="text-xl font-semibold">Add Product</h2>
           <form action={createProduct} className="mt-6 grid gap-4 md:grid-cols-2">
             <input name="name" required placeholder="Product name" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
-            <input name="slug" required placeholder="slug" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
+            
             <input name="brand" required placeholder="Brand" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3" />
             <select name="sport" defaultValue="FOOTBALL" className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3">
               <option value="FOOTBALL">Football</option>

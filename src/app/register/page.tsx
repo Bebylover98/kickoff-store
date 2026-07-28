@@ -17,7 +17,7 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Full name is required'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  phone: z.string().optional(),
+  phone: z.string().min(7, 'Phone number is required'),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -306,11 +306,15 @@ export default function RegisterPage() {
                     <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                     <input
                       {...register('phone')}
-                      placeholder="Phone (optional)"
+                      placeholder="Phone Number"
                       className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
                     />
+                    {errors.phone && touchedFields.phone && (
+                      <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mt-1 flex items-center gap-1 text-xs text-rose-400">
+                        <AlertCircle className="h-3 w-3" /> {errors.phone.message}
+                      </motion.p>
+                    )}
                   </div>
-
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                     <input

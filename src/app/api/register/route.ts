@@ -13,11 +13,12 @@ export async function POST(req: Request) {
       );
     }
 
-    if (password.length < 6) {
+    if (!email || !password || !phone) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters." },
+        { error: "Email, password, and phone number are required." },
         { status: 400 }
       );
+    
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
