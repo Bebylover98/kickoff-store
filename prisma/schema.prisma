@@ -7,6 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model Product {
   id             String      @id @default(cuid())
   name           String
@@ -29,21 +30,23 @@ model Product {
 }
 
 model Customer {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  name            String?
-  phone           String?
-  passwordHash    String?
-  provider        String?   @default("credentials")
-  image           String?
-  role            String    @default("customer")
-  shippingAddress String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  addresses       Address[]
-  orders          Order[]
+  id                     String    @id @default(cuid())
+  email                  String    @unique
+  name                   String?
+  phone                  String?
+  passwordHash           String?
+  provider               String?   @default("credentials")
+  image                  String?
+  role                   String    @default("customer")
+  shippingAddress        String?
+  emailVerified          DateTime?
+  verificationCode       String?
+  verificationCodeExpiry DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  addresses              Address[]
+  orders                 Order[]
 }
-
 model Address {
   id         String   @id @default(cuid())
   customerId String

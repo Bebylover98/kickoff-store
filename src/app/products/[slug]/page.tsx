@@ -62,7 +62,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/shop" className="rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-slate-200">Back to shop</Link>
+            <Link href="/shop" className="mt-2 self-start h-fit inline-block rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]">Back to shop</Link>
             <AddToCartButton
               productId={product.id}
               name={product.name}

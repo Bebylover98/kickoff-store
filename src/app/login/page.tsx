@@ -295,8 +295,7 @@ setTimeout(() => {
               </motion.div>
               <h3 className="text-xl font-semibold">Signed in!</h3>
               <p className="mt-1 text-white/60">
-                {isAdminLogin ? 'You can now sell your products.' : 'Taking you home...'}
-              </p>
+            {isAdminLogin ? 'Welcome, Admin!' : 'Taking you home...'}              </p>
             </motion.div>
           </motion.div>
         )}

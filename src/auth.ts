@@ -26,34 +26,39 @@ const providers: Array<any> = [
       password: { label: 'Password', type: 'password' },
     },
     async authorize(credentials) {
-      const email = String(credentials?.email ?? '').toLowerCase();
-      const password = String(credentials?.password ?? '');
+  const email = String(credentials?.email ?? '').toLowerCase();
+  const password = String(credentials?.password ?? '');
 
-      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        return {
-          id: 'admin',
-          name: 'Store Admin',
-          email: ADMIN_EMAIL,
-          role: 'admin',
-        };
-      }
+  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    return {
+      id: 'admin',
+      name: 'Store Admin',
+      email: ADMIN_EMAIL,
+      role: 'admin',
+    };
+  }
 
-      const customer = await prisma.customer.findUnique({ where: { email } });
-      if (!customer || !customer.passwordHash) {
-        return null;
-      }
+  const customer = await prisma.customer.findUnique({ where: { email } });
+  if (!customer || !customer.passwordHash) {
+    return null;
+  }
 
-      if (!(await verifyPassword(password, customer.passwordHash))) {
-        return null;
-      }
+  // 🔽 NEW: block login if email isn't verified
+  if (!customer.emailVerified) {
+    throw new Error('Please verify your email before logging in');
+  }
 
-      return {
-        id: customer.id,
-        name: customer.name ?? customer.email,
-        email: customer.email,
-        role: 'customer',
-      };
-    },
+  if (!(await verifyPassword(password, customer.passwordHash))) {
+    return null;
+  }
+
+  return {
+    id: customer.id,
+    name: customer.name ?? customer.email,
+    email: customer.email,
+    role: 'customer',
+  };
+},
   }),
 ];
 
@@ -65,27 +70,26 @@ export const authConfig = {
   },
   callbacks: {
   async signIn({ user, account }: any) {
-      if (account?.provider === 'google' && user.email) {
-        const dbCustomer = await prisma.customer.upsert({
-          where: { email: user.email },
-          update: {
-            name: user.name ?? undefined,
-            image: user.image ?? undefined,
-            provider: 'google',
-          },
-          create: {
-            email: user.email,
-            name: user.name ?? 'Customer',
-            image: user.image ?? undefined,
-            provider: 'google',
-          },
-        });
-        // Overwrite the Google account id with our real Customer.id
-        // so downstream jwt/session callbacks use the correct database id.
-        user.id = dbCustomer.id;
-      }
-      return true;
-    },
+  if (account?.provider === 'google' && user.email) {
+    const dbCustomer = await prisma.customer.upsert({
+      where: { email: user.email },
+      update: {
+        name: user.name ?? undefined,
+        image: user.image ?? undefined,
+        provider: 'google',
+      },
+      create: {
+        email: user.email,
+        name: user.name ?? 'Customer',
+        image: user.image ?? undefined,
+        provider: 'google',
+        emailVerified: new Date(), // 🔽 NEW: Google already verified it
+      },
+    });
+    user.id = dbCustomer.id;
+  }
+  return true;
+},
     async jwt({ token, user }: any) {
       if (user) {
         token.role = 'role' in user ? String(user.role) : 'customer';
