@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, AlertCircle, Loader2, CheckCircle, ArrowRight } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function VerifyPage() {
+function VerifyForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get('email') || '';
@@ -158,5 +158,13 @@ export default function VerifyPage() {
         )}
       </motion.div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={null}>
+      <VerifyForm />
+    </Suspense>
   );
 }
