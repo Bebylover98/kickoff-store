@@ -332,8 +332,10 @@ export default function StoreHome({ products }: { products: Product[] }) {
             <div>
               <h4 className="font-semibold">Support</h4>
               <ul className="mt-3 space-y-2 text-sm text-white/40">
-                <li><a href="#" className="hover:text-white transition">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition">Returns</a></li>
+                <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
+                <li><Link href="/returns" className="hover:text-white transition">Returns</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition">Terms</Link></li>
+                <li><Link href="/privacy" className="hover:text-white transition">Privacy</Link></li>
               </ul>
             </div>
             <div>
@@ -413,4 +415,5 @@ export default function StoreHome({ products }: { products: Product[] }) {
     </div>
   );
 }
+
 
