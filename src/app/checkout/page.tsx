@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -30,6 +30,13 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
 
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
+
+  const total = appliedCoupon ? Math.max(subtotal - appliedCoupon.discountAmount, 0) : subtotal;
+
   function update(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
   }
@@ -41,6 +48,36 @@ export default function CheckoutPage() {
     } else {
       setPaymentNotice('');
     }
+  }
+
+  async function applyCoupon() {
+    setCouponError('');
+    if (!couponInput.trim()) return;
+    setApplyingCoupon(true);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponInput, subtotal }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCouponError(data.error ?? 'Invalid coupon.');
+        setAppliedCoupon(null);
+        return;
+      }
+      setAppliedCoupon({ code: data.code, discountAmount: data.discountAmount });
+    } catch {
+      setCouponError('Something went wrong. Please try again.');
+    } finally {
+      setApplyingCoupon(false);
+    }
+  }
+
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    setCouponError('');
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,12 +95,13 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: items.map((i) => ({
-  productId: i.productId,
-  quantity: i.quantity,
-  size: i.size,
-  fitType: i.fitType,
-  partnerSize: i.partnerSize,
-})),
+            productId: i.productId,
+            quantity: i.quantity,
+            size: i.size,
+            fitType: i.fitType,
+            partnerSize: i.partnerSize,
+          })),
+          couponCode: appliedCoupon?.code ?? null,
           ...form,
         }),
       });
@@ -180,9 +218,49 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-white/60">Total</span>
-          <span className="text-xl font-bold text-white">{formatNPR(subtotal)}</span>
+        <div>
+          <p className="text-white/60 text-sm mb-2">Discount code</p>
+          {appliedCoupon ? (
+            <div className="flex items-center justify-between rounded bg-white/5 border border-cyan-400/30 px-4 py-2">
+              <span className="text-cyan-400 text-sm font-medium">{appliedCoupon.code} applied — -{formatNPR(appliedCoupon.discountAmount)}</span>
+              <button type="button" onClick={removeCoupon} className="text-white/40 hover:text-red-400 text-sm">Remove</button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                placeholder="Enter code"
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value)}
+                className="flex-1 rounded bg-white/5 border border-white/10 px-4 py-2 text-white uppercase"
+              />
+              <button
+                type="button"
+                onClick={applyCoupon}
+                disabled={applyingCoupon}
+                className="rounded bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition disabled:opacity-50"
+              >
+                {applyingCoupon ? 'Checking...' : 'Apply'}
+              </button>
+            </div>
+          )}
+          {couponError && <p className="mt-1 text-sm text-red-400">{couponError}</p>}
+        </div>
+
+        <div className="space-y-1 pt-2">
+          <div className="flex items-center justify-between">
+            <span className="text-white/60">Subtotal</span>
+            <span className="text-white">{formatNPR(subtotal)}</span>
+          </div>
+          {appliedCoupon && (
+            <div className="flex items-center justify-between">
+              <span className="text-white/60">Discount</span>
+              <span className="text-cyan-400">-{formatNPR(appliedCoupon.discountAmount)}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <span className="text-white/60 font-medium">Total</span>
+            <span className="text-xl font-bold text-white">{formatNPR(total)}</span>
+          </div>
         </div>
         <p className="text-white/40 text-sm">Payment is collected by cash or local payment method on delivery/pickup - no online payment needed.</p>
         {error && <p className="text-red-400 text-sm">{error}</p>}

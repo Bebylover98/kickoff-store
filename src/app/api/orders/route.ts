@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       items, contactName, contactPhone, addressLine1, addressLine2,
-      city, state, postalCode, country, notes,
+      city, state, postalCode, country, notes, couponCode,
     } = body;
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty.' }, { status: 400 });
@@ -61,6 +61,35 @@ export async function POST(req: Request) {
       total += lineUnitPrice * qty;
     }
 
+    let discountAmount = 0;
+    let appliedCouponCode: string | null = null;
+    let coupon = null;
+
+    if (couponCode) {
+      const normalizedCode = String(couponCode).trim().toUpperCase();
+      coupon = await prisma.coupon.findUnique({ where: { code: normalizedCode } });
+
+      if (!coupon || !coupon.active) {
+        return NextResponse.json({ error: 'Invalid coupon code.' }, { status: 400 });
+      }
+      if (coupon.expiresAt && new Date() > coupon.expiresAt) {
+        return NextResponse.json({ error: 'This coupon has expired.' }, { status: 400 });
+      }
+      if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+        return NextResponse.json({ error: 'This coupon has reached its usage limit.' }, { status: 400 });
+      }
+      if (total < coupon.minOrderAmount) {
+        return NextResponse.json({ error: `Minimum order of NPR ${coupon.minOrderAmount} required for this coupon.` }, { status: 400 });
+      }
+
+      discountAmount = coupon.discountType === 'PERCENT'
+        ? Math.round((total * coupon.discountValue) / 100)
+        : Math.min(coupon.discountValue, total);
+
+      appliedCouponCode = coupon.code;
+      total = Math.max(total - discountAmount, 0);
+    }
+
     const order = await prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
@@ -75,6 +104,8 @@ export async function POST(req: Request) {
           postalCode: postalCode || '',
           country,
           notes: notes || null,
+          couponCode: appliedCouponCode,
+          discountAmount,
           items: { create: orderItemsData },
         },
       });
@@ -83,6 +114,12 @@ export async function POST(req: Request) {
         await tx.product.update({
           where: { id: item.productId },
           data: { inStock: { decrement: stockUsed } },
+        });
+      }
+      if (coupon) {
+        await tx.coupon.update({
+          where: { id: coupon.id },
+          data: { usedCount: { increment: 1 } },
         });
       }
       return created;

@@ -82,6 +82,8 @@ model Order {
   state           String
   postalCode      String
   country         String        @default("Nepal")
+  couponCode      String?
+  discountAmount  Int           @default(0)
   notes           String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -89,6 +91,20 @@ model Order {
   items           OrderItem[]
 
   @@index([customerId])
+}
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  discountType   String    @default("PERCENT")
+  discountValue  Int
+  active         Boolean   @default(true)
+  expiresAt      DateTime?
+  minOrderAmount Int       @default(0)
+  usageLimit     Int?
+  usedCount      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model OrderItem {
