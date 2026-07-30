@@ -131,7 +131,7 @@ export default function RegisterPage() {
       setIsSubmitted(true);
       setIsLoading(false);
       setTimeout(() => {
-        router.push(`/verify?email=${encodeURIComponent(data.email)}`);
+        router.push('/login?registered=true');
       }, 1800);
     } catch (err) {
       setServerError('Something went wrong. Please try again.');
@@ -392,8 +392,8 @@ export default function RegisterPage() {
               >
                 <CheckCircle className="h-8 w-8 text-cyan-400" />
               </motion.div>
-              <h3 className="text-xl font-semibold">Details submitted successfully!</h3>
-              <p className="mt-1 text-white/60">Check your email and enter the verification code.</p>
+              <h3 className="text-xl font-semibold">Registration Successful!</h3>
+              <p className="mt-1 text-white/60">Redirecting you to sign in...</p>
             </motion.div>
           </motion.div>
         )}
@@ -401,3 +401,6 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+
+

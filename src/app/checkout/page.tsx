@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -24,6 +24,8 @@ export default function CheckoutPage() {
     country: 'Nepal',
     notes: '',
   });
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'ESEWA' | 'KHALTI'>('COD');
+  const [paymentNotice, setPaymentNotice] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -32,10 +34,23 @@ export default function CheckoutPage() {
     setForm((f) => ({ ...f, [field]: value }));
   }
 
+  function selectPayment(method: 'COD' | 'ESEWA' | 'KHALTI') {
+    setPaymentMethod(method);
+    if (method === 'ESEWA' || method === 'KHALTI') {
+      setPaymentNotice('This payment system will be available after a few days. Please use Cash on Delivery for now.');
+    } else {
+      setPaymentNotice('');
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     if (items.length === 0) return;
+    if (paymentMethod !== 'COD') {
+      setPaymentNotice('This payment system will be available after a few days. Please use Cash on Delivery for now.');
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch('/api/orders', {
@@ -108,9 +123,6 @@ export default function CheckoutPage() {
         <input required placeholder="Address line 1" value={form.addressLine1}
           onChange={(e) => update('addressLine1', e.target.value)}
           className="w-full rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
-        <input placeholder="Address line 2 (optional)" value={form.addressLine2}
-          onChange={(e) => update('addressLine2', e.target.value)}
-          className="w-full rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
         <div className="grid grid-cols-2 gap-4">
           <input required placeholder="City" value={form.city}
             onChange={(e) => update('city', e.target.value)}
@@ -119,17 +131,54 @@ export default function CheckoutPage() {
             onChange={(e) => update('state', e.target.value)}
             className="rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <input placeholder="Postal code (optional)" value={form.postalCode}
-            onChange={(e) => update('postalCode', e.target.value)}
-            className="rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
-          <input required placeholder="Country" value={form.country}
-            onChange={(e) => update('country', e.target.value)}
-            className="rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
-        </div>
+        <input required placeholder="Country" value={form.country}
+          onChange={(e) => update('country', e.target.value)}
+          className="w-full rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
         <textarea placeholder="Delivery notes (optional)" value={form.notes}
           onChange={(e) => update('notes', e.target.value)}
           className="w-full rounded bg-white/5 border border-white/10 px-4 py-2 text-white" />
+
+        <div>
+          <p className="text-white/60 text-sm mb-2">Payment method</p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => selectPayment('COD')}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                paymentMethod === 'COD'
+                  ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white'
+                  : 'border border-white/10 bg-white/5 text-white/60 hover:text-white'
+              }`}
+            >
+              Cash on Delivery
+            </button>
+            <button
+              type="button"
+              onClick={() => selectPayment('ESEWA')}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                paymentMethod === 'ESEWA'
+                  ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white'
+                  : 'border border-white/10 bg-white/5 text-white/60 hover:text-white'
+              }`}
+            >
+              eSewa
+            </button>
+            <button
+              type="button"
+              onClick={() => selectPayment('KHALTI')}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                paymentMethod === 'KHALTI'
+                  ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white'
+                  : 'border border-white/10 bg-white/5 text-white/60 hover:text-white'
+              }`}
+            >
+              Khalti
+            </button>
+          </div>
+          {paymentNotice && (
+            <p className="mt-2 text-sm text-amber-400">{paymentNotice}</p>
+          )}
+        </div>
 
         <div className="flex items-center justify-between pt-2">
           <span className="text-white/60">Total</span>
@@ -137,7 +186,7 @@ export default function CheckoutPage() {
         </div>
         <p className="text-white/40 text-sm">Payment is collected by cash or local payment method on delivery/pickup - no online payment needed.</p>
         {error && <p className="text-red-400 text-sm">{error}</p>}
-        <button disabled={submitting} type="submit"
+        <button disabled={submitting || paymentMethod !== 'COD'} type="submit"
           className="w-full rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-3 font-medium text-white hover:opacity-90 transition disabled:opacity-50">
           {submitting ? 'Placing order...' : 'Place Order'}
         </button>

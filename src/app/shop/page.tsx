@@ -143,8 +143,9 @@ export default async function ShopPage({
                     </span>
                   </div>
                   <p className="mt-3 text-sm text-white/40 line-clamp-2">{product.description}</p>
-                  <div className="mt-5 flex items-center justify-between">
+                  <div className="mt-5 flex items-center justify-between gap-2">
                     <span className="text-lg font-bold text-cyan-400">{formatNPR(product.price)}</span>
+                    
                     <Link
                       href={`/products/${product.slug}`}
                       className="rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 px-4 py-2 text-sm font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition"

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/cart-context';
-
 type Props = {
   productId: string;
   name: string;
@@ -10,16 +10,14 @@ type Props = {
   imageUrl: string;
   inStock: number;
 };
-
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
-
 export default function AddToCartButton({ productId, name, slug, price, imageUrl, inStock }: Props) {
   const { addItem } = useCart();
+  const router = useRouter();
   const [added, setAdded] = useState(false);
   const [fitType, setFitType] = useState<'MALE' | 'FEMALE' | 'COUPLE'>('MALE');
   const [size, setSize] = useState('M');
   const [partnerSize, setPartnerSize] = useState('M');
-
   if (inStock <= 0) {
     return (
       <button disabled className="rounded-full bg-white/10 px-6 py-3 text-white/40 cursor-not-allowed">
@@ -27,9 +25,7 @@ export default function AddToCartButton({ productId, name, slug, price, imageUrl
       </button>
     );
   }
-
   const finalPrice = fitType === 'COUPLE' ? price * 2 : price;
-
   function handleAdd() {
     addItem(
       {
@@ -48,7 +44,6 @@ export default function AddToCartButton({ productId, name, slug, price, imageUrl
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-3">
@@ -67,7 +62,6 @@ export default function AddToCartButton({ productId, name, slug, price, imageUrl
           </button>
         ))}
       </div>
-
       <div className="flex flex-wrap gap-4">
         <label className="flex flex-col gap-1 text-sm text-white/60">
           <span>{fitType === 'COUPLE' ? 'His size' : 'Size'}</span>
@@ -81,7 +75,6 @@ export default function AddToCartButton({ productId, name, slug, price, imageUrl
             ))}
           </select>
         </label>
-
         {fitType === 'COUPLE' && (
           <label className="flex flex-col gap-1 text-sm text-white/60">
             <span>Her size</span>
@@ -97,13 +90,23 @@ export default function AddToCartButton({ productId, name, slug, price, imageUrl
           </label>
         )}
       </div>
-
-      <button
-        onClick={handleAdd}
-        className="w-fit rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-3 font-medium text-white hover:opacity-90 transition"
-      >
-        {added ? 'Added \u2713' : `Add to Cart${fitType === 'COUPLE' ? ' (2 pcs)' : ''}`}
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={handleAdd}
+          className="w-fit rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 px-6 py-3 font-medium text-white hover:opacity-90 transition"
+        >
+          {added ? 'Added \u2713' : `Add to Cart${fitType === 'COUPLE' ? ' (2 pcs)' : ''}`}
+        </button>
+        <button
+          onClick={() => {
+            handleAdd();
+            router.push('/checkout');
+          }}
+          className="w-fit rounded-full bg-gradient-to-r from-pink-500 to-orange-400 px-6 py-3 font-medium text-white hover:opacity-90 transition"
+        >
+          Buy Now
+        </button>
+      </div>
     </div>
   );
 }

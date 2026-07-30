@@ -43,11 +43,6 @@ const providers: Array<any> = [
     return null;
   }
 
-  // 🔽 NEW: block login if email isn't verified
-  if (!customer.emailVerified) {
-    throw new Error('Please verify your email before logging in');
-  }
-
   if (!(await verifyPassword(password, customer.passwordHash))) {
     return null;
   }

@@ -372,7 +372,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                 <>
                   <div className="flex-1 space-y-3 overflow-y-auto max-h-[60vh]">
                     {cart.map((item) => (
-                      <div key={item.productId} className="flex items-center gap-4 rounded-xl bg-white/5 p-3">
+                      <div key={`${item.productId}-${item.size ?? ""}-${item.fitType ?? ""}`} className="flex items-center gap-4 rounded-xl bg-white/5 p-3">
                         <div className="relative h-12 w-12 shrink-0">
                           <Image src={item.imageUrl} alt={item.name} fill sizes="48px" className="rounded-lg object-cover" />
                         </div>
@@ -413,3 +413,4 @@ export default function StoreHome({ products }: { products: Product[] }) {
     </div>
   );
 }
+
