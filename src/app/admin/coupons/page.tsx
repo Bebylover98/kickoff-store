@@ -48,7 +48,10 @@ export default async function AdminCouponsPage() {
             <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Admin Console</p>
             <h1 className="mt-2 text-3xl font-semibold">Discount Codes</h1>
           </div>
-          <a href="/admin/orders" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">View orders</a>
+          <div className="flex gap-2">
+            <a href="/admin/products" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Products</a>
+            <a href="/admin/orders" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Orders</a>
+          </div>
         </div>
 
         <form action={createCoupon} className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur space-y-4">

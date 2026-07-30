@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+﻿import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 function formatNPR(amount: number) {
@@ -31,7 +31,10 @@ export default async function AdminOrdersPage() {
             <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Admin Console</p>
             <h1 className="mt-2 text-3xl font-semibold">Orders</h1>
           </div>
-          <a href="/admin/products" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Manage products</a>
+          <div className="flex gap-2">
+            <a href="/admin/products" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Manage products</a>
+            <a href="/admin/coupons" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Coupons</a>
+          </div>
         </div>
 
         {orders.length === 0 && <p className="text-slate-400">No orders yet.</p>}
@@ -44,7 +47,7 @@ export default async function AdminOrdersPage() {
                 <span className="text-lg font-semibold text-white">{formatNPR(order.total)}</span>
               </div>
               <div className="mt-3 text-sm text-slate-200">
-                <p><strong>{order.contactName}</strong> — {order.contactPhone}</p>
+                <p><strong>{order.contactName}</strong> â€” {order.contactPhone}</p>
                 <p>{order.addressLine1}{order.addressLine2 ? `, ${order.addressLine2}` : ''}</p>
                 <p>{order.city}, {order.state}{order.postalCode ? ` ${order.postalCode}` : ''}, {order.country}</p>
                 {order.notes && <p className="italic text-slate-400">Note: {order.notes}</p>}
@@ -52,7 +55,7 @@ export default async function AdminOrdersPage() {
               </div>
               <ul className="mt-3 space-y-1 text-sm text-slate-300">
                 {order.items.map((it) => (
-                  <li key={it.id}>{it.quantity} × {it.product.name} ({formatNPR(it.unitPrice)} each)</li>
+                  <li key={it.id}>{it.quantity} Ã— {it.product.name} ({formatNPR(it.unitPrice)} each)</li>
                 ))}
               </ul>
               <form action={updateOrderStatus} className="mt-4 flex items-center gap-3">
