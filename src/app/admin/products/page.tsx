@@ -1,4 +1,4 @@
-﻿import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
@@ -100,6 +100,7 @@ try {
             <h1 className="mt-2 text-3xl font-semibold">Products</h1>
           </div>
           <div className="flex gap-2">
+            <a href="/admin" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Dashboard</a>
             <a href="/admin/orders" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Orders</a>
             <a href="/admin/coupons" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Coupons</a>
             <a href="/" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">View storefront</a>

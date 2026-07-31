@@ -1,4 +1,4 @@
-﻿import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 function formatNPR(amount: number) {
@@ -32,6 +32,7 @@ export default async function AdminOrdersPage() {
             <h1 className="mt-2 text-3xl font-semibold">Orders</h1>
           </div>
           <div className="flex gap-2">
+            <a href="/admin" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Dashboard</a>
             <a href="/admin/products" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Manage products</a>
             <a href="/admin/coupons" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Coupons</a>
           </div>
