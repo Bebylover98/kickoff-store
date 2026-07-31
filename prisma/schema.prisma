@@ -24,6 +24,7 @@ model Product {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   orderItems     OrderItem[]
+  reviews        Review[]
 
   @@index([sport])
   @@index([featured])
@@ -46,6 +47,7 @@ model Customer {
   updatedAt              DateTime  @updatedAt
   addresses              Address[]
   orders                 Order[]
+  reviews                Review[]
 }
 model Address {
   id         String   @id @default(cuid())
@@ -105,6 +107,20 @@ model Coupon {
   usedCount      Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  productId  String
+  customerId String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  @@unique([productId, customerId])
+  @@index([productId])
 }
 
 model OrderItem {
