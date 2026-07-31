@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -137,6 +137,15 @@ export default function CheckoutPage() {
             Sign Up
           </Link>
         </div>
+      </div>
+    );
+  }
+
+  if ((session.user as { role?: string }).role === 'admin') {
+    return (
+      <div className="container mx-auto px-4 py-20 max-w-sm text-center">
+        <h1 className="text-xl font-bold text-white mb-2">You are logged in as Admin</h1>
+        <p className="text-white/60 text-sm">Orders can only be placed from a customer account. Please log in with a customer account to check out.</p>
       </div>
     );
   }

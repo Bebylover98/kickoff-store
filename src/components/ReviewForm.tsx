@@ -18,6 +18,10 @@ export default function ReviewForm({ productId }: { productId: string }) {
     return <p className="text-sm text-slate-400">Please log in to leave a review.</p>;
   }
 
+  if ((session.user as { role?: string }).role === 'admin') {
+    return <p className="text-sm text-amber-400">You are logged in with the admin account. Please use a customer account to leave a review.</p>;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
