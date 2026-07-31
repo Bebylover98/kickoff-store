@@ -1,9 +1,15 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
+import { registerRatelimit } from "@/lib/ratelimit";
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    const { success } = await registerRatelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 });
+    }
     const { name, email, password, phone } = await req.json();
 
     if (!email || !password || !phone) {

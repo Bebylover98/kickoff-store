@@ -1,9 +1,10 @@
-import NextAuth from 'next-auth';
+﻿import NextAuth from 'next-auth';
 import { getServerSession } from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import { prisma } from '@/lib/prisma';
 import { verifyPassword } from '@/lib/auth';
+import { loginRatelimit } from '@/lib/ratelimit';
 
 
 type SessionUser = {
@@ -29,6 +30,10 @@ const providers: Array<any> = [
   const email = String(credentials?.email ?? '').toLowerCase();
   const password = String(credentials?.password ?? '');
 
+  const { success } = await loginRatelimit.limit(email || 'unknown');
+  if (!success) {
+    throw new Error('Too many login attempts. Please try again in a few minutes.');
+  }
   if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
     return {
       id: 'admin',
@@ -78,7 +83,7 @@ export const authConfig = {
         name: user.name ?? 'Customer',
         image: user.image ?? undefined,
         provider: 'google',
-        emailVerified: new Date(), // 🔽 NEW: Google already verified it
+        emailVerified: new Date(), // ðŸ”½ NEW: Google already verified it
       },
     });
     user.id = dbCustomer.id;
