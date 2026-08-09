@@ -233,7 +233,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
         </div>
 
         {filteredProducts.length === 0 ? (
-          <p className="text-white/40">No products yet — add some from /admin/products.</p>
+          <p className="text-white/40">No products yet ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â add some from /admin/products.</p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {filteredProducts.map((product, index) => (
@@ -265,7 +265,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                   </div>
                 </Link>
                 <div className="mt-4 space-y-2">
-                  <p className="text-xs uppercase tracking-wide text-white/30">{sportLabels[product.sport] ?? product.sport} · {product.brand}</p>
+                  <p className="text-xs uppercase tracking-wide text-white/30">{sportLabels[product.sport] ?? product.sport} Ãƒâ€šÃ‚Â· {product.brand}</p>
                   <h3 className="font-semibold">{product.name}</h3>
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-xl font-bold text-cyan-400">{formatNPR(product.price)}</span>
@@ -316,11 +316,18 @@ export default function StoreHome({ products }: { products: Product[] }) {
               <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">KICKOFF</h3>
               <p className="mt-2 text-sm text-white/40">Premium sports gear for champions.</p>
               <div className="mt-4 flex gap-3">
-                {[Share2, Share2, Share2, Share2].map((Icon, i) => (
-                  <a key={i} href="#" className="rounded-full bg-white/5 p-2 text-white/40 hover:bg-white/10 hover:text-white transition">
-                    <Icon className="h-4 w-4" />
-                  </a>
-                ))}
+                <a href="https://wa.me/9779803568924" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="rounded-full bg-white/5 p-2 text-white/40 hover:bg-white/10 hover:text-white transition">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.372-.01-.571-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2C6.486 2 2 6.486 2 12.004c0 1.891.52 3.66 1.426 5.174L2 22l4.94-1.395a9.94 9.94 0 0 0 5.064 1.383h.005c5.516 0 10.001-4.487 10.001-10.006C22.01 6.486 17.524 2 12.004 2zm0 18.19h-.004a8.19 8.19 0 0 1-4.174-1.148l-.3-.178-3.098.874.826-3.02-.195-.31a8.176 8.176 0 0 1-1.257-4.404c0-4.523 3.68-8.203 8.206-8.203 2.192 0 4.252.854 5.802 2.404a8.15 8.15 0 0 1 2.401 5.803c0 4.524-3.68 8.182-8.207 8.182z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/kickoff45store?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="rounded-full bg-white/5 p-2 text-white/40 hover:bg-white/10 hover:text-white transition">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </a>
+                <a href="https://www.facebook.com/share/1BEXAQ7cdz/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="rounded-full bg-white/5 p-2 text-white/40 hover:bg-white/10 hover:text-white transition">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.505 17.523 2 12 2S2 6.505 2 12.06c0 5.02 3.657 9.184 8.438 9.94v-7.03H7.898v-2.91h2.54V9.845c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562v1.875h2.773l-.443 2.91h-2.33V22c4.78-.756 8.437-4.92 8.437-9.94z"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@kickoff45store?_r=1&_t=ZS-98k2be8JqKu" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="rounded-full bg-white/5 p-2 text-white/40 hover:bg-white/10 hover:text-white transition">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z"/></svg>
+                </a>
               </div>
             </div>
             <div>
@@ -348,7 +355,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
             </div>
           </div>
           <div className="mt-8 border-t border-white/5 pt-8 text-center text-sm text-white/30">
-            <p>© 2026 Kickoff Store. All rights reserved.</p>
+            <p>Ãƒâ€šÃ‚Â© 2026 Kickoff Store. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -415,5 +422,3 @@ export default function StoreHome({ products }: { products: Product[] }) {
     </div>
   );
 }
-
-
