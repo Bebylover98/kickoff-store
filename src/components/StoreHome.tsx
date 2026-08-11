@@ -233,7 +233,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
         </div>
 
         {filteredProducts.length === 0 ? (
-          <p className="text-white/40">No products yet ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â add some from /admin/products.</p>
+          <p className="text-white/40">No products yet — add some from /admin/products.</p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {filteredProducts.map((product, index) => (

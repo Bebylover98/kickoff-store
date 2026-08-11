@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Image from 'next/image';
 import type { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
@@ -25,12 +25,13 @@ function toPriceValue(value: string | undefined) {
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sport?: string; minPrice?: string; maxPrice?: string }>;
+  searchParams: Promise<{ sport?: string; minPrice?: string; maxPrice?: string; q?: string }>;
 }) {
   const params = await searchParams;
   const sport = params.sport ?? 'all';
   const minPrice = toPriceValue(params.minPrice);
   const maxPrice = toPriceValue(params.maxPrice);
+  const query = (params.q ?? '').trim();
 
   const where: Prisma.ProductWhereInput = { isActive: true };
 
@@ -46,6 +47,14 @@ export default async function ShopPage({
     if (maxPrice > 0) {
       where.price.lte = maxPrice;
     }
+  }
+
+  if (query) {
+    where.OR = [
+      { name: { contains: query, mode: 'insensitive' } },
+      { description: { contains: query, mode: 'insensitive' } },
+      { brand: { contains: query, mode: 'insensitive' } },
+    ];
   }
 
   const products = await prisma.product.findMany({
@@ -77,6 +86,16 @@ export default async function ShopPage({
 
       <section className="container mx-auto px-4 py-10">
         <form className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:grid-cols-3">
+          <label className="flex flex-col gap-2 text-sm text-white/60 md:col-span-3">
+            <span>Search</span>
+            <input
+              name="q"
+              type="text"
+              placeholder="Search by name, brand, or description"
+              defaultValue={query}
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+            />
+          </label>
           <label className="flex flex-col gap-2 text-sm text-white/60">
             <span>Sport</span>
             <select
