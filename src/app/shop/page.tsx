@@ -139,13 +139,13 @@ export default async function ShopPage({
         {products.length === 0 ? (
           <p className="text-white/40">No products match these filters yet.</p>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (
               <article
                 key={product.id}
                 className="group overflow-hidden rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm hover:border-white/20 transition-all"
               >
-                <div className="relative h-56 w-full overflow-hidden">
+                <div className="relative h-32 sm:h-56 w-full overflow-hidden">
                   <Image
                     src={product.imageUrl}
                     alt={product.name}

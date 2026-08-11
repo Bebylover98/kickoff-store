@@ -94,12 +94,12 @@ try {
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
       <div className="mx-auto flex max-w-7xl flex-col gap-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Admin Console</p>
             <h1 className="mt-2 text-3xl font-semibold">Products</h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <a href="/admin" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Dashboard</a>
             <a href="/admin/orders" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Orders</a>
             <a href="/admin/coupons" className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300">Coupons</a>
