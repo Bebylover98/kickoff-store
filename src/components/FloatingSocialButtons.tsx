@@ -2,7 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { MessageCircle } from 'lucide-react';
 
-const WHATSAPP_URL = 'https://wa.me/9779803568924';
+const WHATSAPP_URL = 'https://wa.me/9779706769170';
 const INSTAGRAM_URL = 'https://www.instagram.com/kickoff45store?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==';
 
 function InstagramIcon() {
