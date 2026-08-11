@@ -265,7 +265,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                   </div>
                 </Link>
                 <div className="mt-4 space-y-2">
-                  <p className="text-xs uppercase tracking-wide text-white/30">{sportLabels[product.sport] ?? product.sport} Ãƒâ€šÃ‚Â· {product.brand}</p>
+                  <p className="text-xs uppercase tracking-wide text-white/30">{sportLabels[product.sport] ?? product.sport} · {product.brand}</p>
                   <h3 className="font-semibold">{product.name}</h3>
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-xl font-bold text-cyan-400">{formatNPR(product.price)}</span>
@@ -355,7 +355,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
             </div>
           </div>
           <div className="mt-8 border-t border-white/5 pt-8 text-center text-sm text-white/30">
-            <p>Ãƒâ€šÃ‚Â© 2026 Kickoff Store. All rights reserved.</p>
+            <p>© 2025 Kickoff Store. All rights reserved.</p>
           </div>
         </div>
       </footer>
