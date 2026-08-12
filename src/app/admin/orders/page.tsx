@@ -9,9 +9,9 @@ async function updateOrderStatus(formData: FormData) {
   'use server';
   const id = String(formData.get('id') ?? '');
   const status = String(formData.get('status') ?? '');
-  const allowed = ['PENDING', 'PAID', 'SHIPPED', 'CANCELLED'];
+  const allowed = ['PENDING', 'PAID', 'SHIPPED', 'CANCELLED', 'COMPLETED'];
   if (!allowed.includes(status)) return;
-  await prisma.order.update({ where: { id }, data: { status: status as 'PENDING' | 'PAID' | 'SHIPPED' | 'CANCELLED' } });
+  await prisma.order.update({ where: { id }, data: { status: status as 'PENDING' | 'PAID' | 'SHIPPED' | 'CANCELLED' | 'COMPLETED' } });
   revalidatePath('/admin/orders');
 }
 
@@ -19,6 +19,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminOrdersPage() {
   const orders = await prisma.order.findMany({
+    where: { status: { not: 'COMPLETED' } },
     include: { items: { include: { product: true } }, customer: true },
     orderBy: { createdAt: 'desc' },
   });
@@ -48,7 +49,7 @@ export default async function AdminOrdersPage() {
                 <span className="text-lg font-semibold text-white">{formatNPR(order.total)}</span>
               </div>
               <div className="mt-3 text-sm text-slate-200">
-                <p><strong>{order.contactName}</strong> â€” {order.contactPhone}</p>
+                <p><strong>{order.contactName}</strong> Ã¢â‚¬â€ {order.contactPhone}</p>
                 <p>{order.addressLine1}{order.addressLine2 ? `, ${order.addressLine2}` : ''}</p>
                 <p>{order.city}, {order.state}{order.postalCode ? ` ${order.postalCode}` : ''}, {order.country}</p>
                 {order.notes && <p className="italic text-slate-400">Note: {order.notes}</p>}
@@ -66,6 +67,7 @@ export default async function AdminOrdersPage() {
                   <option value="PAID">Paid</option>
                   <option value="SHIPPED">Shipped</option>
                   <option value="CANCELLED">Cancelled</option>
+                  <option value="COMPLETED">Completed</option>
                 </select>
                 <button className="rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 transition">Update</button>
               </form>

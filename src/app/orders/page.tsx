@@ -1,4 +1,4 @@
-﻿import { auth } from '@/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ const statusConfig: Record<string, { icon: typeof Clock; color: string; bg: stri
   PAID: { icon: CheckCircle2, color: 'text-cyan-400', bg: 'bg-cyan-400/10 border-cyan-400/20' },
   SHIPPED: { icon: Truck, color: 'text-purple-400', bg: 'bg-purple-400/10 border-purple-400/20' },
   CANCELLED: { icon: XCircle, color: 'text-red-400', bg: 'bg-red-400/10 border-red-400/20' },
+  COMPLETED: { icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-400/10 border-green-400/20' },
 };
 
 export const dynamic = 'force-dynamic';
