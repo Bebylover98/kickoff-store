@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import StoreNav from './StoreNav';
 import { useCart } from '@/lib/cart-context';
+import { optimizedImageUrl } from '@/lib/image-url';
 
 type Product = {
   id: string;
@@ -197,7 +198,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                       className="flex flex-col items-center rounded-2xl bg-white/5 p-4 backdrop-blur-sm border border-white/10 cursor-pointer"
                     >
                       <div className="relative h-24 w-24 mb-2">
-                        <Image src={product.imageUrl} alt={product.name} fill sizes="96px" className="rounded-xl object-cover" />
+                        <Image src={optimizedImageUrl(product.imageUrl, 200)} alt={product.name} fill sizes="96px" className="rounded-xl object-cover" />
                       </div>
                       <p className="text-sm font-medium text-center">{product.name}</p>
                       <p className="text-sm text-cyan-400">{formatNPR(product.price)}</p>
@@ -257,7 +258,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                 <Link href={`/products/${product.slug}`}>
                   <div className="relative h-48 overflow-hidden rounded-xl">
                     <Image
-                      src={product.imageUrl}
+                      src={optimizedImageUrl(product.imageUrl, 400)}
                       alt={product.name}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

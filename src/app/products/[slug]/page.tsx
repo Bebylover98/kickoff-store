@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Star } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import { optimizedImageUrl } from '@/lib/image-url';
 import AddToCartButton from '@/components/AddToCartButton';
 import ReviewForm from '@/components/ReviewForm';
 
@@ -67,7 +68,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur">
             <div className="relative h-[420px] w-full overflow-hidden rounded-2xl">
               <Image
-                src={product.imageUrl}
+                src={optimizedImageUrl(product.imageUrl, 800)}
                 alt={product.name}
                 fill
                 sizes="(max-width: 1024px) 100vw, 576px"

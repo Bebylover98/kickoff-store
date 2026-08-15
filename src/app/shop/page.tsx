@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
+import { optimizedImageUrl } from '@/lib/image-url';
 import AuroraBackground from '@/components/AuroraBackground';
 import StoreNav from '@/components/StoreNav';
 
@@ -147,7 +148,7 @@ export default async function ShopPage({
               >
                 <div className="relative h-32 sm:h-56 w-full overflow-hidden">
                   <Image
-                    src={product.imageUrl}
+                    src={optimizedImageUrl(product.imageUrl, 500)}
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
