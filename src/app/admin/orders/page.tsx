@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { optimizedImageUrl } from '@/lib/image-url';
 
 function formatNPR(amount: number) {
   return `NPR ${amount.toLocaleString('en-US')}`;
@@ -49,17 +50,30 @@ export default async function AdminOrdersPage() {
                 <span className="text-lg font-semibold text-white">{formatNPR(order.total)}</span>
               </div>
               <div className="mt-3 text-sm text-slate-200">
-                <p><strong>{order.contactName}</strong> Ã¢â‚¬â€ {order.contactPhone}</p>
-                <p>{order.addressLine1}{order.addressLine2 ? `, ${order.addressLine2}` : ''}</p>
-                <p>{order.city}, {order.state}{order.postalCode ? ` ${order.postalCode}` : ''}, {order.country}</p>
+                <p><strong>{order.contactName}</strong> â€” {order.contactPhone}</p>
+                <p>{order.addressLine1}{order.addressLine2 ? `, ${order.addressLine2}` : 
+''
+}</p>
+                <p>{order.city}, {order.state}{order.postalCode ? ` ${order.postalCode}` : 
+''
+}, {order.country}</p>
                 {order.notes && <p className="italic text-slate-400">Note: {order.notes}</p>}
                 <p className="mt-1 text-slate-500">Account: {order.customer.email}</p>
               </div>
-              <ul className="mt-3 space-y-1 text-sm text-slate-300">
+              <div className="mt-4 flex flex-col gap-3">
                 {order.items.map((it) => (
-                  <li key={it.id}>{it.quantity} Ã— {it.product.name} ({formatNPR(it.unitPrice)} each)</li>
+                  <div key={it.id} className="flex items-center gap-3">
+                    <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
+                      <img
+                        src={optimizedImageUrl(it.product.imageUrl, 96)}
+                        alt={it.product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <p className="text-sm text-slate-300">{it.quantity} Ã— {it.product.name} ({formatNPR(it.unitPrice)} each)</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
               <form action={updateOrderStatus} className="mt-4 flex items-center gap-3">
                 <input type="hidden" name="id" value={order.id} />
                 <select name="status" defaultValue={order.status} className="rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2 text-sm">
