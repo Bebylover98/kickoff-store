@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
+import OrderConfirmAnimation from '@/components/OrderConfirmAnimation';
 
 function formatNPR(amount: number) {
   return `NPR ${amount.toLocaleString('en-US')}`;
@@ -155,7 +156,7 @@ export default function CheckoutPage() {
   }
 
   if (orderPlaced) {
-    return <div className="container mx-auto px-4 py-20 text-center text-white/60">Placing your order...</div>;
+    return <OrderConfirmAnimation />;
   }
   return (
     <div className="container mx-auto px-4 py-10 max-w-xl">
