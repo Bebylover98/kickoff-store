@@ -188,20 +188,21 @@ export default function StoreHome({ products }: { products: Product[] }) {
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.8, type: 'spring' }} className="relative flex items-center justify-center">
               <div className="relative grid grid-cols-2 gap-4">
                 {heroProducts.map((product, i) => (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                    whileHover={{ y: -8, scale: 1.02 }}
-                    className="flex flex-col items-center rounded-2xl bg-white/5 p-4 backdrop-blur-sm border border-white/10"
-                  >
-                    <div className="relative h-24 w-24 mb-2">
-                      <Image src={product.imageUrl} alt={product.name} fill sizes="96px" className="rounded-xl object-cover" />
-                    </div>
-                    <p className="text-sm font-medium text-center">{product.name}</p>
-                    <p className="text-sm text-cyan-400">{formatNPR(product.price)}</p>
-                  </motion.div>
+                  <Link key={product.id} href={`/products/${product.slug}`}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + i * 0.1 }}
+                      whileHover={{ y: -8, scale: 1.02 }}
+                      className="flex flex-col items-center rounded-2xl bg-white/5 p-4 backdrop-blur-sm border border-white/10 cursor-pointer"
+                    >
+                      <div className="relative h-24 w-24 mb-2">
+                        <Image src={product.imageUrl} alt={product.name} fill sizes="96px" className="rounded-xl object-cover" />
+                      </div>
+                      <p className="text-sm font-medium text-center">{product.name}</p>
+                      <p className="text-sm text-cyan-400">{formatNPR(product.price)}</p>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             </motion.div>
@@ -233,7 +234,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
         </div>
 
         {filteredProducts.length === 0 ? (
-          <p className="text-white/40">No products yet — add some from /admin/products.</p>
+          <p className="text-white/40">No products yet â€” add some from /admin/products.</p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {filteredProducts.map((product, index) => (
@@ -265,7 +266,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
                   </div>
                 </Link>
                 <div className="mt-4 space-y-2">
-                  <p className="text-xs uppercase tracking-wide text-white/30">{sportLabels[product.sport] ?? product.sport} · {product.brand}</p>
+                  <p className="text-xs uppercase tracking-wide text-white/30">{sportLabels[product.sport] ?? product.sport} Â· {product.brand}</p>
                   <h3 className="font-semibold">{product.name}</h3>
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-xl font-bold text-cyan-400">{formatNPR(product.price)}</span>
@@ -355,7 +356,7 @@ export default function StoreHome({ products }: { products: Product[] }) {
             </div>
           </div>
           <div className="mt-8 border-t border-white/5 pt-8 text-center text-sm text-white/30">
-            <p>© 2025 Kickoff Store. All rights reserved.</p>
+            <p>Â© 2025 Kickoff Store. All rights reserved.</p>
           </div>
         </div>
       </footer>
