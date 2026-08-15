@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import StoreHome from '@/components/StoreHome';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function HomePage() {
   const products = await prisma.product.findMany({

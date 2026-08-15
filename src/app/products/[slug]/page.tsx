@@ -10,7 +10,7 @@ function formatNPR(amount: number) {
   return `NPR ${amount.toLocaleString('en-US')}`;
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
